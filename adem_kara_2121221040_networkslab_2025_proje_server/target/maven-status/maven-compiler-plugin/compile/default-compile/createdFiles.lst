@@ -1,0 +1,4 @@
+battleshipserver\Server.class
+battleshipserver\ServerThread.class
+battleshipserver\BattleShipServer.class
+battleshipserver\Sclient.class
