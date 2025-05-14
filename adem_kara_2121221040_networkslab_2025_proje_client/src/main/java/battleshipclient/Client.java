@@ -4,6 +4,9 @@
  */
 package battleshipclient;
 
+import static battleshipclient.Client.sInput;
+
+import game.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,7 +18,53 @@ import java.util.logging.Logger;
  *
  * @author cvsbilisim
  */
-class Listen extends Thread {}
+class Listen extends Thread {
+
+    public void run() {
+        //soket bağlı olduğu sürece dön
+        while (Client.socket.isConnected()) {
+      
+                //mesaj gelmesini bloking olarak dinyelen komut
+                Message received = (Message) (sInput.readObject());
+
+                // Log received message type
+                System.out.println("[CLIENT] Received message of type: " + received.type);
+
+                //mesaj gelirse bu satıra geçer
+                //mesaj tipine göre yapılacak işlemi ayır.
+                switch (received.type) {
+                    case Name:
+                        System.out.println("[CLIENT] Name message received: " + received.content);
+
+                  
+                    case Disconnect:
+                        System.out.println("[CLIENT] Disconnect message received");
+                        break;
+
+                    case Text:
+                        System.out.println("[CLIENT] Text message received: " + received.content);
+                        
+                        break;
+
+                    case Text2:
+                        System.out.println("[CLIENT] Text message received: " + received.content);
+                    
+                        break;
+
+                   
+
+                    case Bitis:
+                        System.out.println("[CLIENT] Bitis mesajı alındı: " + received.content);
+
+                       
+                        break;
+
+              
+            }
+        }
+        System.out.println("[CLIENT] Listen thread ending");
+    }
+}
 public class Client {
 
     //her clientın bir soketi olmalı
