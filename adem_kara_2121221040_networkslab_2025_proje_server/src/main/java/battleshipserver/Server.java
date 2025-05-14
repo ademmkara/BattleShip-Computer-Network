@@ -5,7 +5,7 @@
  */
 package battleshipserver;
 
-
+import game.Message;
 import java.io.IOException;
 
 import java.net.ServerSocket;
@@ -32,10 +32,15 @@ class ServerThread extends Thread {
                 Socket clientSocket = Server.serverSocket.accept();
                 //client gelirse bu satıra geçer
                 Server.Display("Client Geldi...");
-
+                //gelen client soketinden bir sclient nesnesi oluştur
+                //bir adet id de kendimiz verdik
+                SClient nclient = new SClient(clientSocket, Server.IdClient);
                 
                 Server.IdClient++;
-
+                //clienti listeye ekle.
+                Server.Clients.add(nclient);
+                //client mesaj dinlemesini başlat
+                nclient.listenThread.start();
 
             } catch (IOException ex) {
                 Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
@@ -55,6 +60,7 @@ public class Server {
     public static ServerThread runThread;
     //public static PairingThread pairThread;
 
+    public static ArrayList<SClient> Clients = new ArrayList<>();
 
     //semafor nesnesi
     public static Semaphore pairTwo = new Semaphore(1, true);
@@ -78,9 +84,43 @@ public class Server {
         System.out.println(msg);
 
     }
+
+    // serverdan clietlara mesaj gönderme
+    //clieti alıyor ve mesaj olluyor
+    public static void Send(SClient cl, Message msg) {
+
+        try {
+            cl.sOutput.writeObject(msg);
+        } catch (IOException ex) {
+            Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
     
-    
-   
+    public static void cleanupClient(SClient client) {
+    try {
+        if(client.soket != null && !client.soket.isClosed()) {
+            client.soket.close();
+        }
+        Clients.remove(client);
+        System.out.println("Client temizlendi: " + client.name);
+    } catch (IOException e) {
+        System.err.println("Client temizleme hatası: " + e.getMessage());
+    }
+}
+    public static synchronized void removeClient(SClient client) {
+    try {
+        if (!Clients.contains(client)) return;
+        
+        Clients.remove(client);
+        System.out.println("Client kaldırıldı: " + client.name);
+        
+        if (client.soket != null && !client.soket.isClosed()) {
+            client.soket.close();
+        }
+    } catch (IOException e) {
+        System.err.println("Client kaldırma hatası: " + e.getMessage());
+    }
 }
 
-
+}
