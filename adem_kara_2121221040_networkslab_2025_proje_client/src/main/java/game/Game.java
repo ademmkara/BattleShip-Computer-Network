@@ -1,5 +1,7 @@
 package game;
 
+
+
 import battleshipclient.Client;
 import java.awt.Color;
 import javax.swing.JButton;
@@ -18,19 +20,15 @@ public class Game extends javax.swing.JFrame {
     public static Board enemyBoard;
     public static PlayerBoard playerBoard;
     public static JButton btnFire;
-    public static boolean iAmReady = false;
-    public static boolean rivalIsReady = false;
-    public static JButton btnRestart;
-    public static JFrame gameFrame;
+    
 
     /**
      * Creates new form Game
      */
     public Game() {
-        initComponents();
-        ThisGame = this;
-    }
-
+    initComponents();
+    ThisGame = this; // Bu satır olmalı!
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -38,8 +36,73 @@ public class Game extends javax.swing.JFrame {
      */
     @SuppressWarnings("unchecked")
 
+    public void showGameBoards() {
+        JFrame gameFrame = new JFrame("Battleship - Game Screen");
+        gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        gameFrame.setSize(1200, 700);
+        gameFrame.setLayout(null); // Mutlak konumlandırma kullanıyoruz
+        gameFrame.setBackground(Color.BLACK);
+
+        // Enemy Board (küçük)
+        enemyBoard = new game.Board();
+        enemyBoard.drawBoard();
+        enemyBoard.setBounds(50, 100, 300, 300);
+      
+        // Player Board (büyük)
+        playerBoard = new game.PlayerBoard();
+        playerBoard.drawBoard();
+        playerBoard.setBounds(650, 100, 300, 300);
+
+        // Etiketler
+        JLabel lblEnemy = new JLabel(txt_rival_name.getText() + "'s board");
+        lblEnemy.setBounds(50, 50, 200, 30);
+        gameFrame.add(lblEnemy);
+
+        JLabel lblPlayer = new JLabel(txt_name.getText() + "'s board");
+        lblPlayer.setBounds(650, 50, 200, 30);
+        gameFrame.add(lblPlayer);
+
+        btnFire = new JButton("Fire");
+        btnFire.setBounds(400, 90, 100, 30);
+        btnFire.setEnabled(false); // Başlangıçta pasif
+
+        JButton btnReady = new JButton("Ready");
+        btnReady.setBounds(400, 50, 100, 30);
+       
+
+        btnFire.addActionListener(e -> {
+            int row = Game.enemyBoard.getRclick();
+            int col = Game.enemyBoard.getCclick();
+
+            if (row < 0 || col < 0) {
+                txt_receive.setText("Lütfen bir hücre seçin!");
+                return;
+            }
 
 
+            
+
+            btnFire.setEnabled(false);  // Sırayı rakibe ver
+            txt_receive.setText("Saldırı gönderildi: " + (char) (row + 'A') + (col + 1));
+        });
+        gameFrame.add(btnReady);
+        gameFrame.add(btnFire);
+
+        gameFrame.add(enemyBoard);
+        gameFrame.add(playerBoard);
+
+        gameFrame.setVisible(true);
+        this.setVisible(false);
+        
+        gameFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+    @Override
+    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+        Client.Stop();
+    }
+});
+
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -58,8 +121,6 @@ public class Game extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
-        jPanel1.setMaximumSize(new java.awt.Dimension(561, 379));
-        jPanel1.setMinimumSize(new java.awt.Dimension(561, 379));
 
         txt_name.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         txt_name.addActionListener(new java.awt.event.ActionListener() {
@@ -173,36 +234,34 @@ public class Game extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(31, 31, 31)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_connectActionPerformed
-
-        if (txt_name.getText().isEmpty()) {
-
+        
+        if(txt_name.getText().isEmpty()){
+                
             JOptionPane.showMessageDialog(null, "Lütfen bir isim giriniz.");
 
-        } else {
-            Client.Start("127.0.0.1", 2000);
-            //başlangıç durumları
+        }else{
+        Client.Start("127.0.0.1", 2000);
+        //başlangıç durumları
 
-            btn_connect.setEnabled(false);
-            txt_name.setEnabled(false);
+        btn_connect.setEnabled(false);
+        txt_name.setEnabled(false);
 
-            btn_send_message.setEnabled(true);
-            ThisGame.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                    Client.Stop();
-
-                }
-            });
-
+        btn_send_message.setEnabled(true);
+        ThisGame.addWindowListener(new java.awt.event.WindowAdapter() {
+    @Override
+    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+        Client.Stop();
+    
+    }});
+        
         }
 
     }//GEN-LAST:event_btn_connectActionPerformed
@@ -213,6 +272,7 @@ public class Game extends javax.swing.JFrame {
                 // Henüz eşleşme yoksa
                 txt_receive.setText("Rakip bekleniyor...");
 
+             
             } else {
                 // Eşleşme varsa
                 txt_receive.setText("Eşleşme sağlandı! Oyun başlayabilir.");
@@ -220,15 +280,12 @@ public class Game extends javax.swing.JFrame {
                 // Oyun başlatma mesajını gönder (isteğe bağlı)
                 Message msg = new Message(Message.Message_Type.Start);
                 Client.Send(msg);
-                
-                this.setVisible(false); // Game ekranını gizle
 
             }
         } else {
             txt_receive.setText("Önce sunucuya bağlanmalısınız!");
         }
         //btn_start.setEnabled(false);
-
     }//GEN-LAST:event_btn_startActionPerformed
 
     private void btn_send_messageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_send_messageActionPerformed
@@ -269,7 +326,6 @@ public class Game extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Game.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
