@@ -1,6 +1,10 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package battleshipserver;
 
-import battleshipserver.SClient.Listen.PairingThread;
 import game.Message;
 import static game.Message.Message_Type.Selected;
 import java.io.IOException;
@@ -13,6 +17,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ *
+ * @author INSECT
+ */
 public class SClient {
 
     int id;
@@ -30,8 +38,6 @@ public class SClient {
     private List<Ship> ships;
 
     public boolean paired = false;
-    public int hp = 2;
-    public boolean restartRequest = false;
 
     public SClient(Socket gelenSoket, int id) {
         this.soket = gelenSoket;
@@ -44,7 +50,7 @@ public class SClient {
         }
         //thread nesneleri
         this.listenThread = new Listen(this);
-        //this.pairThread = new PairingThread(this);
+        this.pairThread = new PairingThread(this);
 
     }
 
@@ -71,46 +77,21 @@ public class SClient {
 
         public void run() {
             //client bağlı olduğu sürece dönsün
-            try {
-                while (TheClient.soket.isConnected()) {
-
+            while (TheClient.soket.isConnected()) {
+                try {
                     //mesajı bekleyen kod satırı
                     Message received = (Message) (TheClient.sInput.readObject());
                     //mesaj gelirse bu satıra geçer
                     //mesaj tipine göre işlemlere ayır
                     switch (received.type) {
                         case Name:
-                            String originalName = received.content.toString();
-                            String uniqueName = originalName;
-                            int suffix = 1;
-
-                            // Aynı isimde biri varsa sonuna numara ekleyerek benzersiz yap
-                            for (SClient existing : Server.Clients) {
-                                if (existing.name.equals(uniqueName)) {
-                                    uniqueName = originalName + "_" + suffix;
-                                    suffix++;
-                                }
-                            }
-
-                            TheClient.name = uniqueName;
-
-                            // İstemciye yeni ismi bildir
-                            Message nameMsg = new Message(Message.Message_Type.Name);
-                            nameMsg.content = uniqueName;
-                            Server.Send(TheClient, nameMsg);
-
+                            TheClient.name = received.content.toString();
+                            // isim verisini gönderdikten sonra eşleştirme işlemine başla
                             TheClient.pairThread.start();
                             break;
                         case Disconnect:
-                            Server.Clients.remove(TheClient);
-                            TheClient.rival.hp = 17;
-                            TheClient.hp = 17;
                             break;
                         case Text:
-                            //gelen metni direkt rakibe gönder
-                            Server.Send(TheClient.rival, received);
-                            break;
-                        case Text2:
                             //gelen metni direkt rakibe gönder
                             Server.Send(TheClient.rival, received);
                             break;
@@ -119,21 +100,110 @@ public class SClient {
                             Server.Send(TheClient.rival, received);
                             break;
 
+                        case Bitis:
+                            break;
+                        case PairStatus:
+                            // Eşleşme durumunu kontrol et
+                            Message reply = new Message(Message.Message_Type.Text);
+                            if (TheClient.paired) {
+                                reply.content = "Eşleşme sağlandı! Rakip: " + TheClient.rival.name;
+                            } else {
+                                reply.content = "Hala rakip bekleniyor...";
+                            }
+                            Server.Send(TheClient, reply);
+                            break;
+
+                        case SHIP_INFO:
+                            System.out.println("Gemi bilgileri alındı: " + received.content);
+                            String[] shipData = received.content.toString().split(";");
+                            TheClient.ships = new ArrayList<>();
+
+                            for (String data : shipData) {
+                                if (data.isEmpty()) {
+                                    continue;
+                                }
+
+                                String[] parts = data.split(",");
+                                int row = Integer.parseInt(parts[0]);
+                                int col = Integer.parseInt(parts[1]);
+                                boolean isVertical = Boolean.parseBoolean(parts[2]);
+                                int length = Integer.parseInt(parts[3]); // Uzunluk bilgisini oku
+
+                                Ship ship = new Ship("", length); // İsim önemsiz, uzunluk kritik
+                                ship.setPos(row, col, isVertical);
+                                TheClient.ships.add(ship);
+
+                                System.out.println("Gemi oluşturuldu: " + row + "," + col
+                                        + " Uzunluk:" + length
+                                        + " Dikey:" + isVertical);
+                            }
+                            break;
+
+                        case AttackResult:
+                            String[] coords = received.content.toString().split(",");
+                            int attackRow = Integer.parseInt(coords[0]);
+                            int attackCol = Integer.parseInt(coords[1]);
+
+                            boolean isHit = false;
+                            for (Ship ship : TheClient.ships) {
+                                if (ship.checkHit(attackRow, attackCol)) {
+                                    isHit = true;
+                                    break;
+                                }
+                            }
+
+                            // Sonucu gönder
+                            Message resultMsg = new Message(Message.Message_Type.AttackResult);
+                            resultMsg.content = attackRow + "," + attackCol + "," + isHit;
+                            Server.Send(TheClient.rival, resultMsg); // Saldıran oyuncuya sonuç
+
+                            break;
+
+                        case Attack:
+                            System.out.println("Attack mesajı alındı: " + received.content);
+                            String[] coordss = received.content.toString().split(",");
+                            int row = Integer.parseInt(coordss[0]);
+                            int col = Integer.parseInt(coordss[1]);
+
+                            boolean isHitt = false;
+
+                            // 🔍 Rakibin gemileri kontrol ediliyor
+                            for (Ship ship : TheClient.rival.ships) {
+                                if (ship.checkHit(row, col)) {
+                                    isHitt = true;
+                                    break;
+                                }
+                            }
+
+                            // 🎯 Saldıran kişiye sonuç gönder (kendi enemyBoard’unu güncelleyecek)
+                            Message resultToAttacker = new Message(Message.Message_Type.AttackResult);
+                            resultToAttacker.content = row + "," + col + "," + isHitt;
+                            resultToAttacker.sender = TheClient.name;
+                            Server.Send(TheClient, resultToAttacker);
+
+                            Message resultToDefender = new Message(Message.Message_Type.AttackResult);
+                            resultToDefender.content = row + "," + col + "," + isHitt;
+                            resultToDefender.sender = TheClient.name;
+                            Server.Send(TheClient.rival, resultToDefender);
+
+                            System.out.println("Sonuç iki tarafa da gönderildi: " + row + "," + col + " → " + (isHitt ? "HIT" : "MISS"));
+                            break;
 
                     }
 
+                } catch (IOException ex) {
+                    Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+                    //client bağlantısı koparsa listeden sil
+                    Server.Clients.remove(TheClient);
+
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+                    //client bağlantısı koparsa listeden sil
+                    Server.Clients.remove(TheClient);
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
-                //client bağlantısı koparsa listeden sil
-                Server.Clients.remove(TheClient);
+            }
 
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
-                //client bağlantısı koparsa listeden sil
-                Server.Clients.remove(TheClient);
-            } 
-
+        }
     }
 
     //eşleştirme threadi
@@ -197,4 +267,4 @@ public class SClient {
         }
     }
 
-    }}
+}

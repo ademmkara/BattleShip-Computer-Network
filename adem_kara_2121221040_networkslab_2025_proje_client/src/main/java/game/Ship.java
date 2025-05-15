@@ -7,7 +7,7 @@ public class Ship implements Serializable {
     private String name;
     private boolean pos[][];
     private int r, c;
-    private boolean vertical;
+    private boolean vertical; // EKSİK OLAN BU ALAN
 
     public Ship(String n, int l) {
         this.name = n;

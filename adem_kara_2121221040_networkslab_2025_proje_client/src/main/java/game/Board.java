@@ -22,7 +22,7 @@ public class Board extends JPanel implements ActionListener {
     private int rClick, cClick;
     private Border dborder, cborder;
     private JLabel markers[];
-
+    private int count = 0;
 
     public Board() {
         // TODO Auto-generated constructor stub
@@ -100,7 +100,8 @@ public class Board extends JPanel implements ActionListener {
         btnGrid[row][col].setBorderPainted(false);
         btnGrid[row][col].setText("X");
         btnGrid[row][col].setEnabled(true);
-
+        count++;
+        System.out.println(count);
     }
 
     public void placeMissMarker(int row, int col) {
@@ -112,7 +113,9 @@ public class Board extends JPanel implements ActionListener {
         btnGrid[row][col].setEnabled(false);
     }
     
-
+    public int getCount(){
+        return count;
+    }
     //Returns an integer representing the row of the button last clicked
     public int getRclick() {
         return rClick;

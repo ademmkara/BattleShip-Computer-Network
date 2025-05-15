@@ -20,6 +20,7 @@ public class Game extends javax.swing.JFrame {
     public static Board enemyBoard;
     public static PlayerBoard playerBoard;
     public static JButton btnFire;
+    JFrame gameFrame = new JFrame("Battleship - Game Screen");
     
 
     /**
@@ -37,7 +38,7 @@ public class Game extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
 
     public void showGameBoards() {
-        JFrame gameFrame = new JFrame("Battleship - Game Screen");
+        //JFrame gameFrame = new JFrame("Battleship - Game Screen");
         gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         gameFrame.setSize(1200, 700);
         gameFrame.setLayout(null); // Mutlak konumlandırma kullanıyoruz
@@ -47,7 +48,12 @@ public class Game extends javax.swing.JFrame {
         enemyBoard = new game.Board();
         enemyBoard.drawBoard();
         enemyBoard.setBounds(50, 100, 300, 300);
-      
+        
+        if(enemyBoard.getCount() == 17){
+            String mesaj = "Kazandiniz" + txt_name.getText();
+            JOptionPane.showMessageDialog(null, mesaj);
+        }
+
         // Player Board (büyük)
         playerBoard = new game.PlayerBoard();
         playerBoard.drawBoard();
@@ -68,7 +74,20 @@ public class Game extends javax.swing.JFrame {
 
         JButton btnReady = new JButton("Ready");
         btnReady.setBounds(400, 50, 100, 30);
-       
+        btnReady.addActionListener(e -> {
+            // Tüm gemiler yerleşti mi kontrolü
+            if (playerBoard.getAllShipsPlaced()) {
+                // Sunucuya ready mesajı gönder
+                Message readyMsg = new Message(Message.Message_Type.Ready);
+                Client.Send(readyMsg);
+                System.out.println(txt_name.getText()+"'s ships");
+                btnReady.setEnabled(false); // Butonu devre dışı bırak
+                btnFire.setEnabled(true);
+               
+            } else {
+                
+            }
+        });
 
         btnFire.addActionListener(e -> {
             int row = Game.enemyBoard.getRclick();
@@ -79,7 +98,10 @@ public class Game extends javax.swing.JFrame {
                 return;
             }
 
-
+            Message attackMsg = new Message(Message.Message_Type.Attack);
+            attackMsg.content = row + "," + col;
+            Client.Send(attackMsg);
+            
             
 
             btnFire.setEnabled(false);  // Sırayı rakibe ver
@@ -272,7 +294,10 @@ public class Game extends javax.swing.JFrame {
                 // Henüz eşleşme yoksa
                 txt_receive.setText("Rakip bekleniyor...");
 
-             
+                // Sunucuya pair durumunu sorgula (isteğe bağlı)
+                Message msg = new Message(Message.Message_Type.PairStatus);
+                msg.content = "Pair durumu sorgulama";
+                Client.Send(msg);
             } else {
                 // Eşleşme varsa
                 txt_receive.setText("Eşleşme sağlandı! Oyun başlayabilir.");
@@ -284,7 +309,9 @@ public class Game extends javax.swing.JFrame {
             }
         } else {
             txt_receive.setText("Önce sunucuya bağlanmalısınız!");
+        
         }
+        this.showGameBoards();
         //btn_start.setEnabled(false);
     }//GEN-LAST:event_btn_startActionPerformed
 

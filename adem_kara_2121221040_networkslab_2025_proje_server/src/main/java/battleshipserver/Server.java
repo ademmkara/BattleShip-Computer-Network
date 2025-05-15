@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author 
+ * @author INSECT
  */
 //client gelişini dinleme threadi
 class ServerThread extends Thread {
@@ -96,31 +96,5 @@ public class Server {
         }
 
     }
-    
-    public static void cleanupClient(SClient client) {
-    try {
-        if(client.soket != null && !client.soket.isClosed()) {
-            client.soket.close();
-        }
-        Clients.remove(client);
-        System.out.println("Client temizlendi: " + client.name);
-    } catch (IOException e) {
-        System.err.println("Client temizleme hatası: " + e.getMessage());
-    }
-}
-    public static synchronized void removeClient(SClient client) {
-    try {
-        if (!Clients.contains(client)) return;
-        
-        Clients.remove(client);
-        System.out.println("Client kaldırıldı: " + client.name);
-        
-        if (client.soket != null && !client.soket.isClosed()) {
-            client.soket.close();
-        }
-    } catch (IOException e) {
-        System.err.println("Client kaldırma hatası: " + e.getMessage());
-    }
-}
 
 }
