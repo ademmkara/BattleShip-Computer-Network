@@ -7,9 +7,9 @@ package game;
 import battleshipclient.Client;
 import game.Game;
 import static game.Game.btnFire;
-
+import static game.Game.btnRestart;
 import static game.Game.enemyBoard;
-
+import static game.Game.gameFrame;
 import static game.Game.playerBoard;
 import java.awt.Color;
 import javax.swing.JButton;
@@ -35,6 +35,9 @@ public class GameBoard extends javax.swing.JFrame {
     public GameBoard() {
         initComponents();
         ThisGame = this;
+        //setSize(1216, 766); // Açılış boyutunu tam olarak belirle
+        setResizable(false); // pencere yeniden boyutlandırılamaz
+        setLocationRelativeTo(null); // ekranın ortasında açılır
         btnFire.setEnabled(false);
 
         btnRestart.setVisible(false);
@@ -84,6 +87,8 @@ public class GameBoard extends javax.swing.JFrame {
                 if (result == JOptionPane.YES_OPTION) {
                     Client.Stop();
                     dispose(); // pencereyi kapat
+                    Message disconnect = new Message(Message.Message_Type.Disconnect);
+                    Client.Send(disconnect);
                 } else {
                     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); // kapatma iptal
                 }
@@ -92,7 +97,25 @@ public class GameBoard extends javax.swing.JFrame {
 
     }
 
+    public void initializeNewGame() {
+        if (enemyBoard != null) {
+            enemyBoard.resetBoard();
+        }
 
+        if (playerBoard != null) {
+            playerBoard.resetBoard();
+
+        }
+        btnFire.setVisible(true);
+        btnFire.setEnabled(false);
+        btnRestart.setVisible(false);
+        btnReady.setEnabled(true);
+
+        GameBoard.iAmReady = false;
+        GameBoard.rivalIsReady = false;
+
+        txt_receive.setText("Yeni oyun başladı. Gemilerinizi yerleştirin.");
+    }
 
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -181,12 +204,12 @@ public class GameBoard extends javax.swing.JFrame {
                 .addGap(94, 94, 94)
                 .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnFire, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 386, Short.MAX_VALUE)
+                    .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 274, Short.MAX_VALUE)
                 .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(215, 215, 215))
+                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(204, 204, 204))
         );
         pnl_BoardLayout.setVerticalGroup(
             pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -253,11 +276,11 @@ public class GameBoard extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(36, 36, 36)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(56, 56, 56)
+                .addGap(63, 63, 63)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(36, 36, 36)
                 .addComponent(btn_send_message, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(254, Short.MAX_VALUE))
+                .addContainerGap(247, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -267,7 +290,8 @@ public class GameBoard extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(pnl_Board, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnl_message, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(pnl_message, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(105, 105, 105))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -289,6 +313,8 @@ public class GameBoard extends javax.swing.JFrame {
             if (GameBoard.rivalIsReady) {
                 btnFire.setEnabled(true);
             }
+        } else {
+            JOptionPane.showMessageDialog(null, "Lütfen gemilerinizi yerleştiriniz.");
         }
     }//GEN-LAST:event_btnReadyActionPerformed
 
@@ -363,7 +389,6 @@ public class GameBoard extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(GameBoard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */

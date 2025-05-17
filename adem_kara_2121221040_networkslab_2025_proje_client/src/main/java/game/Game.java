@@ -1,7 +1,5 @@
 package game;
 
-
-
 import battleshipclient.Client;
 import java.awt.Color;
 import javax.swing.JButton;
@@ -20,16 +18,21 @@ public class Game extends javax.swing.JFrame {
     public static Board enemyBoard;
     public static PlayerBoard playerBoard;
     public static JButton btnFire;
-    JFrame gameFrame = new JFrame("Battleship - Game Screen");
-    
+    public static boolean iAmReady = false;
+    public static boolean rivalIsReady = false;
+    public static JButton btnRestart;
+    public static JFrame gameFrame;
 
     /**
      * Creates new form Game
      */
     public Game() {
-    initComponents();
-    ThisGame = this; // Bu satır olmalı!
-}
+        initComponents();
+        ThisGame = this;
+        setResizable(false); // pencere yeniden boyutlandırılamaz
+        setLocationRelativeTo(null); // ekranın ortasında açılır
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -37,94 +40,8 @@ public class Game extends javax.swing.JFrame {
      */
     @SuppressWarnings("unchecked")
 
-    public void showGameBoards() {
-        //JFrame gameFrame = new JFrame("Battleship - Game Screen");
-        gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        gameFrame.setSize(1200, 700);
-        gameFrame.setLayout(null); // Mutlak konumlandırma kullanıyoruz
-        gameFrame.setBackground(Color.BLACK);
 
-        // Enemy Board (küçük)
-        enemyBoard = new game.Board();
-        enemyBoard.drawBoard();
-        enemyBoard.setBounds(50, 100, 300, 300);
-        
-        if(enemyBoard.getCount() == 17){
-            String mesaj = "Kazandiniz" + txt_name.getText();
-            JOptionPane.showMessageDialog(null, mesaj);
-        }
 
-        // Player Board (büyük)
-        playerBoard = new game.PlayerBoard();
-        playerBoard.drawBoard();
-        playerBoard.setBounds(650, 100, 300, 300);
-
-        // Etiketler
-        JLabel lblEnemy = new JLabel(txt_rival_name.getText() + "'s board");
-        lblEnemy.setBounds(50, 50, 200, 30);
-        gameFrame.add(lblEnemy);
-
-        JLabel lblPlayer = new JLabel(txt_name.getText() + "'s board");
-        lblPlayer.setBounds(650, 50, 200, 30);
-        gameFrame.add(lblPlayer);
-
-        btnFire = new JButton("Fire");
-        btnFire.setBounds(400, 90, 100, 30);
-        btnFire.setEnabled(false); // Başlangıçta pasif
-
-        JButton btnReady = new JButton("Ready");
-        btnReady.setBounds(400, 50, 100, 30);
-        btnReady.addActionListener(e -> {
-            // Tüm gemiler yerleşti mi kontrolü
-            if (playerBoard.getAllShipsPlaced()) {
-                // Sunucuya ready mesajı gönder
-                Message readyMsg = new Message(Message.Message_Type.Ready);
-                Client.Send(readyMsg);
-                System.out.println(txt_name.getText()+"'s ships");
-                btnReady.setEnabled(false); // Butonu devre dışı bırak
-                btnFire.setEnabled(true);
-               
-            } else {
-                
-            }
-        });
-
-        btnFire.addActionListener(e -> {
-            int row = Game.enemyBoard.getRclick();
-            int col = Game.enemyBoard.getCclick();
-
-            if (row < 0 || col < 0) {
-                txt_receive.setText("Lütfen bir hücre seçin!");
-                return;
-            }
-
-            Message attackMsg = new Message(Message.Message_Type.Attack);
-            attackMsg.content = row + "," + col;
-            Client.Send(attackMsg);
-            
-            
-
-            btnFire.setEnabled(false);  // Sırayı rakibe ver
-            txt_receive.setText("Saldırı gönderildi: " + (char) (row + 'A') + (col + 1));
-        });
-        gameFrame.add(btnReady);
-        gameFrame.add(btnFire);
-
-        gameFrame.add(enemyBoard);
-        gameFrame.add(playerBoard);
-
-        gameFrame.setVisible(true);
-        this.setVisible(false);
-        
-        gameFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-    @Override
-    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        Client.Stop();
-    }
-});
-
-    }
-    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -143,6 +60,8 @@ public class Game extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel1.setMaximumSize(new java.awt.Dimension(561, 379));
+        jPanel1.setMinimumSize(new java.awt.Dimension(561, 379));
 
         txt_name.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         txt_name.addActionListener(new java.awt.event.ActionListener() {
@@ -249,41 +168,45 @@ public class Game extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_connectActionPerformed
-        
-        if(txt_name.getText().isEmpty()){
-                
+        //scp -i "C:\Users\cvsbilisim\Desktop\battleship-servers.pem" "C:\Users\cvsbilisim\.m2\repository\com\mycompany\adem_kara_2121221040_networkslab_2025_proje_server\1.0-SNAPSHOT\adem_kara_2121221040_networkslab_2025_proje_server-1.0-SNAPSHOT.jar" ubuntu@13.60.186.154:/home/ubuntu
+        //ssh -i "C:\Users\cvsbilisim\Desktop\battleship-servers.pem" ubuntu@13.60.186.154
+        //java -jar
+        if (txt_name.getText().isEmpty()) {
+
             JOptionPane.showMessageDialog(null, "Lütfen bir isim giriniz.");
 
-        }else{
-        Client.Start("16.170.219.220", 2000);
-        //başlangıç durumları
+        } else {
+            Client.Start("localhost", 2000);
+            //başlangıç durumları
 
-        btn_connect.setEnabled(false);
-        txt_name.setEnabled(false);
+            btn_connect.setEnabled(false);
+            txt_name.setEnabled(false);
 
-        btn_send_message.setEnabled(true);
-        ThisGame.addWindowListener(new java.awt.event.WindowAdapter() {
-    @Override
-    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        Client.Stop();
-    
-    }});
-        
+            btn_send_message.setEnabled(true);
+            ThisGame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    Client.Stop();
+                    Message disconnect = new Message(Message.Message_Type.Disconnect);
+                    Client.Send(disconnect);
+
+                }
+            });
+
         }
 
     }//GEN-LAST:event_btn_connectActionPerformed
@@ -305,14 +228,19 @@ public class Game extends javax.swing.JFrame {
                 // Oyun başlatma mesajını gönder (isteğe bağlı)
                 Message msg = new Message(Message.Message_Type.Start);
                 Client.Send(msg);
+                GameBoard boardScreen = new GameBoard();
+                GameBoard.ThisGame = boardScreen;
+                boardScreen.setSize(1216, 766);
+                boardScreen.setVisible(true);
+                boardScreen.showGameBoards();
+                this.setVisible(false); // Game ekranını gizle
 
             }
         } else {
             txt_receive.setText("Önce sunucuya bağlanmalısınız!");
-        
         }
-        this.showGameBoards();
         //btn_start.setEnabled(false);
+
     }//GEN-LAST:event_btn_startActionPerformed
 
     private void btn_send_messageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_send_messageActionPerformed

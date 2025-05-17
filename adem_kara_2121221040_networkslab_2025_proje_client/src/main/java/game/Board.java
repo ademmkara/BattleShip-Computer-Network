@@ -22,7 +22,7 @@ public class Board extends JPanel implements ActionListener {
     private int rClick, cClick;
     private Border dborder, cborder;
     private JLabel markers[];
-    private int count = 0;
+
 
     public Board() {
         // TODO Auto-generated constructor stub
@@ -90,6 +90,8 @@ public class Board extends JPanel implements ActionListener {
         setVisible(true);
 
     }
+    
+    
 
     //Changes the color of a specified button to red, to represent that the cell was shot on by
     //the player and struck a ship. Also disables the button to prevent re-clicking
@@ -100,8 +102,7 @@ public class Board extends JPanel implements ActionListener {
         btnGrid[row][col].setBorderPainted(false);
         btnGrid[row][col].setText("X");
         btnGrid[row][col].setEnabled(true);
-        count++;
-        System.out.println(count);
+
     }
 
     public void placeMissMarker(int row, int col) {
@@ -112,10 +113,25 @@ public class Board extends JPanel implements ActionListener {
         btnGrid[row][col].setText("O");
         btnGrid[row][col].setEnabled(false);
     }
-    
-    public int getCount(){
-        return count;
+    public void resetBoard() {
+        
+
+    for (int i = 0; i < btnGrid.length; i++) {
+        for (int j = 0; j < btnGrid[i].length; j++) {
+            btnGrid[i][j].setBackground(Color.BLACK);
+            btnGrid[i][j].setText("");
+            btnGrid[i][j].setEnabled(true);
+            btnGrid[i][j].setBorder(dborder); // kenarlık sıfırlansın
+        }
     }
+
+    // Seçilen hücre bilgilerini sıfırla
+    rClick = -1;
+    cClick = -1;
+}
+
+    
+
     //Returns an integer representing the row of the button last clicked
     public int getRclick() {
         return rClick;
@@ -173,3 +189,5 @@ public class Board extends JPanel implements ActionListener {
     }
 
 }
+
+

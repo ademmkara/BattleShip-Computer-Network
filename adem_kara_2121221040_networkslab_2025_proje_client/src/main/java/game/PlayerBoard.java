@@ -109,6 +109,36 @@ public class PlayerBoard extends Board implements ActionListener {
         }
 
     }
+    
+    @Override
+public void resetBoard() {
+    super.resetBoard(); // Board sınıfındaki temel reset işlemleri
+    this.shipsPlaced = false;
+
+
+
+    // PlayerBoard'a özel temizlik
+    this.ship = new Ship[5];
+
+    ship[0] = new Ship("Carrier", 5);
+    ship[1] = new Ship("Battleship", 4);
+    ship[2] = new Ship("Cruiser", 3);
+    ship[3] = new Ship("Submarine", 3);
+    ship[4] = new Ship("Destroyer", 2);
+
+    this.hp = 2; // ya da 17 gibi toplam hücre sayısı
+    this.index = 0;
+    this.isVertical = false;
+    this.shipsPlaced = false;
+
+    // Gemi yerleşimini tekrar aktif hale getir
+    for (int i = 0; i < btnGrid.length; i++) {
+        for (int j = 0; j < btnGrid.length; j++) {
+            btnGrid[i][j].addActionListener(this);
+        }
+    }
+}
+
 
     private String getShipPositions() {
         StringBuilder positions = new StringBuilder();
@@ -124,22 +154,30 @@ public class PlayerBoard extends Board implements ActionListener {
     //Checks if a specified cell is occupied by any of the ships in the array of Ship,
     //returning true if it does (also subtracts 1 from hp and places hit marker) and false if it does not.
 
-    public boolean checkEnemyShot(int row, int col) {
-        System.out.println("Vuruş kontrolü: " + row + "," + col);
-        for (Ship ship : ship) {
-            System.out.println("Kontrol edilen gemi: " + ship.getRow() + "," + ship.getCol()
-                    + " Uzunluk:" + ship.getLength());
-            if (ship.checkHit(row, col)) {
-                System.out.println("VURULDU!");
-                hp--;
-                placeHitMarker(row, col);
-                return true;
+   public boolean checkEnemyShot(int row, int col) {
+    System.out.println("Vuruş kontrolü: " + row + "," + col);
+    for (Ship ship : ship) {
+        if (ship.checkHit(row, col)) {
+            System.out.println("VURULDU!");
+            hp--;
+            placeHitMarker(row, col);
+
+            // HP 0 ise oyun biter
+            if (hp == 0) {
+                System.out.println("TÜM GEMİLER VURULDU! OYUN BİTTİ!");
+                Message gameOver = new Message(Message.Message_Type.Bitis);
+                gameOver.sender = Game.ThisGame.txt_name.getText();
+                Client.Send(gameOver);
             }
+
+            return true;
         }
-        System.out.println("ISKA!");
-        placeMissMarker(row, col);
-        return false;
     }
+    System.out.println("ISKA!");
+    placeMissMarker(row, col);
+    return false;
+}
+
 
     //Checks if the hp of the PlayerBoard is 0. The hp is an int that represents the sum of
     //the health (num of cells) of all the ships. When it reaches 0, every cell of every

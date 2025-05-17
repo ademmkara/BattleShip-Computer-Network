@@ -11,4 +11,21 @@
         <maven.compiler.target>11</maven.compiler.target>
         <exec.mainClass>com.mycompany.adem_kara_2121221040_networkslab_2025_proje_server.Adem_kara_2121221040_networkslab_2025_proje_server</exec.mainClass>
     </properties>
+    <build>
+        <plugins>
+            <!-- Maven Jar Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>battleshipserver.AppMain</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

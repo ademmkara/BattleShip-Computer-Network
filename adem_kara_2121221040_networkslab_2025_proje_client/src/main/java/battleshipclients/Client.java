@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static battleshipclient.Client.sInput;
 import game.Game;
+import game.GameBoard;
 import javax.swing.SwingUtilities;
 
 // serverdan gelecek mesajları dinleyen thread
@@ -30,15 +31,44 @@ class Listen extends Thread {
                 switch (received.type) {
                     case Name:
                         System.out.println("[CLIENT] Name message received: " + received.content);
+
+                        String uniqueName = received.content.toString();
+
+                        // İstemci adını arayüzde güncelle
+                        Game.ThisGame.txt_name.setText(uniqueName);
+
                         break;
+
                     case RivalConnected:
                         String name = received.content.toString();
                         System.out.println("[CLIENT] Rival connected: " + name);
-                        Game.ThisGame.txt_rival_name.setText(name);
-                        Game.ThisGame.btn_send_message.setEnabled(true);
 
-                        // Eşleşme sağlandığında otomatik olarak tahtaları göster
-                        Game.ThisGame.showGameBoards();
+                        // Giriş ekranı üzerindeki rakip adı
+                        if (Game.ThisGame != null) {
+                            Game.ThisGame.txt_rival_name.setText(name);
+                        }
+
+                        // Oyun ekranı üzerindeki rakip adı
+                        if (GameBoard.ThisGame != null) {
+                            GameBoard.ThisGame.txt_rival_name.setText(name + "'s board");
+                        }
+
+                        Game.ThisGame.btn_send_message.setEnabled(true);
+                        break;
+
+                    case RivalDisconnected:
+
+                        GameBoard.ThisGame.txt_rival_name.setText("Rival");
+                        GameBoard.rivalIsReady = false;
+                        GameBoard.enemyBoard.resetBoard();
+                        GameBoard.playerBoard.resetBoard();
+                        GameBoard.iAmReady = false;
+                        GameBoard.rivalIsReady = false;
+                        GameBoard.ThisGame.btnFire.setVisible(true);
+                        GameBoard.ThisGame.btnFire.setEnabled(false);
+                        GameBoard.ThisGame.btnReady.setEnabled(true);
+                        GameBoard.ThisGame.btnRestart.setVisible(false);
+                        //GameBoard.ThisGame.txt_receive.setText(received.content.toString());
                         break;
 
                     case Disconnect:
@@ -48,6 +78,11 @@ class Listen extends Thread {
                     case Text:
                         System.out.println("[CLIENT] Text message received: " + received.content);
                         Game.ThisGame.txt_receive.setText(received.content.toString());
+                        break;
+
+                    case Text2:
+                        System.out.println("[CLIENT] Text message received: " + received.content);
+                        GameBoard.ThisGame.txt_receive.setText(received.content.toString());
                         break;
 
                     case Selected:
@@ -67,38 +102,44 @@ class Listen extends Thread {
                             if (sender.equals(myName)) {
                                 // Ben saldırmışım → enemyBoard (sol)
                                 if (hit) {
-                                    Game.enemyBoard.placeHitMarker(resultRow, resultCol);
+                                    GameBoard.ThisGame.enemyBoard.placeHitMarker(resultRow, resultCol);
                                     Game.ThisGame.txt_receive.setText("Vurdun! 🔥");
                                 } else {
-                                    Game.enemyBoard.placeMissMarker(resultRow, resultCol);
+                                    GameBoard.ThisGame.enemyBoard.placeMissMarker(resultRow, resultCol);
                                     Game.ThisGame.txt_receive.setText("Iskaladın! 💦");
                                 }
                             } else {
                                 // Ben vuruldum → playerBoard (sağ)
                                 if (hit) {
-                                    Game.playerBoard.placeHitMarker(resultRow, resultCol);
+                                    GameBoard.ThisGame.playerBoard.placeHitMarker(resultRow, resultCol);
                                     Game.ThisGame.txt_receive.setText("Rakip vurdu! 🔥");
                                 } else {
-                                    Game.playerBoard.placeMissMarker(resultRow, resultCol);
+                                    GameBoard.ThisGame.playerBoard.placeMissMarker(resultRow, resultCol);
                                     Game.ThisGame.txt_receive.setText("Rakip ıskaladı! 💦");
                                 }
                             }
 
                         });
 
-                        Game.ThisGame.btnFire.setEnabled(true);
+                        // Sadece ben saldırdıysam, btnFire tekrar açılmalı
+                        if (sender.equals(Game.ThisGame.txt_name.getText())) {
+                            GameBoard.ThisGame.btnFire.setEnabled(false); // saldırdım, sıra rakipte → kapanmalı
+                        } else {
+                            GameBoard.ThisGame.btnFire.setEnabled(true);  // rakip saldırdı, şimdi sıra bende
+                        }
+
                         break;
 
                     case Attack:
                         System.out.println("[CLIENT] Attack message received: " + received.content);
                         // Bu mesaj rakipten geldiğinde işlem yap
-                        if (Game.ThisGame != null) {
+                        if (GameBoard.ThisGame != null) {
                             String[] coords = received.content.toString().split(",");
                             int attackRow = Integer.parseInt(coords[0]);
                             int attackCol = Integer.parseInt(coords[1]);
 
                             // Kendi tahtamızda vuruş kontrolü yap
-                            boolean isHit = Game.playerBoard.checkEnemyShot(attackRow, attackCol);
+                            boolean isHit = GameBoard.ThisGame.playerBoard.checkEnemyShot(attackRow, attackCol);
 
                             // Sonucu rakibe gönder
                             Message resultMsg = new Message(Message.Message_Type.AttackResult);
@@ -108,24 +149,72 @@ class Listen extends Thread {
                         break;
 
                     case Bitis:
-                        System.out.println("[CLIENT] Game end message received");
+                        System.out.println("[CLIENT] Bitis mesajı alındı: " + received.content);
+
+                        GameBoard.ThisGame.btnFire.setVisible(false);
+                        GameBoard.ThisGame.txt_receive.setText(received.content.toString());
+
+                        javax.swing.SwingUtilities.invokeLater(() -> {
+                            javax.swing.JOptionPane.showMessageDialog(null, received.content.toString(), "Oyun Bitti", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                        });
+
+                        GameBoard.ThisGame.btnRestart.setVisible(true);
+
                         break;
 
                     case Ready:
                         System.out.println("[CLIENT] Ready message received");
+
+                        GameBoard.rivalIsReady = true;
+
+                        if (GameBoard.iAmReady) {
+                            GameBoard.ThisGame.btnFire.setEnabled(true);
+                            System.out.println("Her iki oyuncu da hazır! Saldırı yapabilirsiniz.");
+                        }
                         break;
 
                     case SHIP_INFO:
                         System.out.println("[CLIENT] Ship info message received: " + received.content);
                         break;
 
-
+//                    case Attack:
+//                        System.out.println("[CLIENT] Attack message received: " + received.content);
+//                        // Bu mesaj rakipten geldiğinde işlem yap
+//                        if (Game.ThisGame != null) {
+//                            String[] coords = received.content.toString().split(",");
+//                            int attackRow = Integer.parseInt(coords[0]);
+//                            int attackCol = Integer.parseInt(coords[1]);
+//
+//                            // Kendi tahtamızda vuruş kontrolü yap
+//                            boolean isHit = Game.playerBoard.checkEnemyShot(attackRow, attackCol);
+//
+//                            // Sonucu rakibe gönder
+//                            Message resultMsg = new Message(Message.Message_Type.AttackResult);
+//                            resultMsg.content = attackRow + "," + attackCol + "," + isHit;
+//                            Client.Send(resultMsg);
+//
+//                            // Kendi tahtamızı güncelle
+//                            SwingUtilities.invokeLater(() -> {
+//                                if (isHit) {
+//                                    Game.playerBoard.placeHitMarker(attackRow, attackCol);
+//                                    Game.ThisGame.txt_receive.setText("Rakip sizi vurdu! 🔥");
+//                                    System.out.println("Rakip sizi vurdu! 🔥" + received.content);
+//                                } else {
+//                                    Game.playerBoard.placeMissMarker(attackRow, attackCol);
+//                                    Game.ThisGame.txt_receive.setText("Rakip ıskaladı! 💦");
+//                                }
+//                            });
+//                        }
+//                        break;
                     case PairStatus:
                         System.out.println("[CLIENT] Pair status message received: " + received.content);
                         break;
 
                     case Start:
-                        System.out.println("[CLIENT] Start message received");
+                        System.out.println("[CLIENT] Yeni oyun başlatılıyor...");
+                        SwingUtilities.invokeLater(() -> {
+                            GameBoard.ThisGame.initializeNewGame();
+                        });
                         break;
 
                     default:
@@ -173,7 +262,7 @@ public class Client {
             Client.listenMe = new Listen();
             Client.listenMe.start();
 
-            //ilk mesaj olarak isim gönderiyorum
+
             Message msg = new Message(Message.Message_Type.Name);
             msg.content = Game.ThisGame.txt_name.getText();
             System.out.println("[CLIENT] Sending Name message: " + msg.content);
@@ -187,17 +276,22 @@ public class Client {
     //client durdurma fonksiyonu
     public static void Stop() {
         try {
-            if (Client.socket != null) {
+            if (Client.socket != null && !Client.socket.isClosed()) {
                 System.out.println("[CLIENT] Stopping client connection");
+
+                // Önce Disconnect mesajını gönder
+                Message disconnectMsg = new Message(Message.Message_Type.Disconnect);
+                Client.Send(disconnectMsg); // 💡 önce mesaj
+
+                // Sonra soket bağlantısını kes
                 Client.listenMe.stop();
-                Client.socket.close();
                 Client.sOutput.flush();
                 Client.sOutput.close();
                 Client.sInput.close();
+                Client.socket.close();
             }
         } catch (IOException ex) {
             System.out.println("[CLIENT] Error in Stop: " + ex.getMessage());
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

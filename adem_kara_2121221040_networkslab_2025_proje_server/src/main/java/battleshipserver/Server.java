@@ -17,12 +17,13 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author INSECT
+ * @author 
  */
 //client gelişini dinleme threadi
 class ServerThread extends Thread {
 
     public void run() {
+        
         //server kapanana kadar dinle
         while (!Server.serverSocket.isClosed()) {
             try {
@@ -64,7 +65,7 @@ public class Server {
 
     //semafor nesnesi
     public static Semaphore pairTwo = new Semaphore(1, true);
-
+    
     // başlaşmak için sadece port numarası veriyoruz
     public static void Start(int openport) {
         try {
@@ -96,5 +97,31 @@ public class Server {
         }
 
     }
+    
+    public static void cleanupClient(SClient client) {
+    try {
+        if(client.soket != null && !client.soket.isClosed()) {
+            client.soket.close();
+        }
+        Clients.remove(client);
+        System.out.println("Client temizlendi: " + client.name);
+    } catch (IOException e) {
+        System.err.println("Client temizleme hatası: " + e.getMessage());
+    }
+}
+    public static synchronized void removeClient(SClient client) {
+    try {
+        if (!Clients.contains(client)) return;
+        
+        Clients.remove(client);
+        System.out.println("Client kaldırıldı: " + client.name);
+        
+        if (client.soket != null && !client.soket.isClosed()) {
+            client.soket.close();
+        }
+    } catch (IOException e) {
+        System.err.println("Client kaldırma hatası: " + e.getMessage());
+    }
+}
 
 }

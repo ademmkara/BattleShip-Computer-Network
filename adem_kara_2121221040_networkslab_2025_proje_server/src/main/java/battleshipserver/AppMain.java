@@ -10,7 +10,7 @@ package battleshipserver;
  *
  * @author INSECT
  */
-public class BattleShipServer {
+public class AppMain {
 
     /**
      * @param args the command line arguments

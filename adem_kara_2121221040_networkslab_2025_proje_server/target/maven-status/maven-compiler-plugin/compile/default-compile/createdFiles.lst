@@ -1,4 +1,10 @@
+game\Message$Message_Type.class
+battleshipserver\SClient$1.class
+battleshipserver\SClient$PairingThread.class
+battleshipserver\SClient$Listen.class
 battleshipserver\Server.class
 battleshipserver\ServerThread.class
-battleshipserver\BattleShipServer.class
-battleshipserver\Sclient.class
+battleshipserver\Ship.class
+battleshipserver\SClient.class
+game\Message.class
+battleshipserver\AppMain.class
