@@ -26,11 +26,9 @@ public class GameBoard extends javax.swing.JFrame {
     public static GameBoard ThisGame;
     public static Board enemyBoard;
     public static PlayerBoard playerBoard;
-    //public static JButton btnFire;
     public static boolean iAmReady = false;
     public static boolean rivalIsReady = false;
-    //public static JButton btnRestart;
-    //public static JFrame gameFrame;
+    public static boolean myTurn = false;
 
     public GameBoard() {
         initComponents();
@@ -65,7 +63,7 @@ public class GameBoard extends javax.swing.JFrame {
         // Etiketler güvenli olarak ayarla
         if (Game.ThisGame != null) {
             txt_rival_name.setText(Game.ThisGame.txt_rival_name.getText() + "'s board");
-            txt_name.setText(Game.ThisGame.txt_name.getText() + "'s board");
+            txt_name.setText(Game.ThisGame.txt_name.getText() + "'s board (YOU)");
         } else {
             txt_rival_name.setText("Enemy Board");
             txt_name.setText("Your Board");
@@ -201,15 +199,22 @@ public class GameBoard extends javax.swing.JFrame {
                 .addComponent(btnRestart, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(pnl_BoardLayout.createSequentialGroup()
-                .addGap(94, 94, 94)
                 .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnFire, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 274, Short.MAX_VALUE)
+                    .addGroup(pnl_BoardLayout.createSequentialGroup()
+                        .addGap(111, 111, 111)
+                        .addComponent(btnFire, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnl_BoardLayout.createSequentialGroup()
+                        .addGap(102, 102, 102)
+                        .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 267, Short.MAX_VALUE)
                 .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(204, 204, 204))
+                    .addGroup(pnl_BoardLayout.createSequentialGroup()
+                        .addGap(11, 11, 11)
+                        .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(169, 169, 169))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_BoardLayout.createSequentialGroup()
+                        .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(135, 135, 135))))
         );
         pnl_BoardLayout.setVerticalGroup(
             pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -333,6 +338,7 @@ public class GameBoard extends javax.swing.JFrame {
 
         btnFire.setEnabled(false);  // Sırayı rakibe ver
         //Game.ThisGame.txt_receive.setText("Saldırı gönderildi: " + (char) (row + 'A') + (col + 1));
+        
     }//GEN-LAST:event_btnFireActionPerformed
 
     private void btnRestartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestartActionPerformed

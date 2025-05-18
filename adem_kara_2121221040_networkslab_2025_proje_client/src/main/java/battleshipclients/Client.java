@@ -177,35 +177,6 @@ class Listen extends Thread {
                         System.out.println("[CLIENT] Ship info message received: " + received.content);
                         break;
 
-//                    case Attack:
-//                        System.out.println("[CLIENT] Attack message received: " + received.content);
-//                        // Bu mesaj rakipten geldiğinde işlem yap
-//                        if (Game.ThisGame != null) {
-//                            String[] coords = received.content.toString().split(",");
-//                            int attackRow = Integer.parseInt(coords[0]);
-//                            int attackCol = Integer.parseInt(coords[1]);
-//
-//                            // Kendi tahtamızda vuruş kontrolü yap
-//                            boolean isHit = Game.playerBoard.checkEnemyShot(attackRow, attackCol);
-//
-//                            // Sonucu rakibe gönder
-//                            Message resultMsg = new Message(Message.Message_Type.AttackResult);
-//                            resultMsg.content = attackRow + "," + attackCol + "," + isHit;
-//                            Client.Send(resultMsg);
-//
-//                            // Kendi tahtamızı güncelle
-//                            SwingUtilities.invokeLater(() -> {
-//                                if (isHit) {
-//                                    Game.playerBoard.placeHitMarker(attackRow, attackCol);
-//                                    Game.ThisGame.txt_receive.setText("Rakip sizi vurdu! 🔥");
-//                                    System.out.println("Rakip sizi vurdu! 🔥" + received.content);
-//                                } else {
-//                                    Game.playerBoard.placeMissMarker(attackRow, attackCol);
-//                                    Game.ThisGame.txt_receive.setText("Rakip ıskaladı! 💦");
-//                                }
-//                            });
-//                        }
-//                        break;
                     case PairStatus:
                         System.out.println("[CLIENT] Pair status message received: " + received.content);
                         break;
@@ -215,6 +186,19 @@ class Listen extends Thread {
                         SwingUtilities.invokeLater(() -> {
                             GameBoard.ThisGame.initializeNewGame();
                         });
+                        break;
+
+                    case Turn:
+                        boolean isMyTurn = Boolean.parseBoolean(received.content.toString());
+                        GameBoard.myTurn = isMyTurn;
+
+                        // Fire sadece oyuncuların her ikisi de hazırsa ve sıra kendisindeyse açılır
+                        boolean allowFire = isMyTurn && GameBoard.iAmReady && GameBoard.rivalIsReady;
+                        GameBoard.ThisGame.btnFire.setEnabled(allowFire);
+
+                        GameBoard.ThisGame.txt_receive.setText(
+                                allowFire ? "Sıra sizde!" : "Rakip hamlesi bekleniyor..."
+                        );
                         break;
 
                     default:
@@ -261,7 +245,6 @@ public class Client {
             Client.sOutput = new ObjectOutputStream(Client.socket.getOutputStream());
             Client.listenMe = new Listen();
             Client.listenMe.start();
-
 
             Message msg = new Message(Message.Message_Type.Name);
             msg.content = Game.ThisGame.txt_name.getText();

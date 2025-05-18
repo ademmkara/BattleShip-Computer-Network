@@ -66,22 +66,22 @@ public class Ship implements Serializable {
     public int getRow() { return r; }
     public int getCol() { return c; }
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-		Ship s = new Ship("Battleship", 4);
-		s.setPos(3, 5, true);
-		System.out.println(s.getHealth());
-		
-		System.out.println(s.checkHit(4, 5));
-		
-		System.out.println(s.getHealth());
-		System.out.println(s.getName());
-		System.out.println(s.getLength());
-		System.out.println(s.getRow());
-		System.out.println(s.getCol());
-		
-
-	}
+//	public static void main(String[] args) {
+//		// TODO Auto-generated method stub
+//		
+//		Ship s = new Ship("Battleship", 4);
+//		s.setPos(3, 5, true);
+//		System.out.println(s.getHealth());
+//		
+//		System.out.println(s.checkHit(4, 5));
+//		
+//		System.out.println(s.getHealth());
+//		System.out.println(s.getName());
+//		System.out.println(s.getLength());
+//		System.out.println(s.getRow());
+//		System.out.println(s.getCol());
+//		
+//
+//	}
 
 }

@@ -15,8 +15,8 @@ import java.util.logging.Logger;
 public class SClient {
 
     int id;
-    public String name = "NoName";           // sistem içi eşsiz isim
-    public String displayName = "NoName";    // kullanıcıya gösterilecek isim
+    public String name = "isimYok";
+    public String displayName = "isimYok";
     Socket soket;
     ObjectOutputStream sOutput;
     ObjectInputStream sInput;
@@ -26,13 +26,14 @@ public class SClient {
     //cilent eşleştirme thredi
     PairingThread pairThread;
     //rakip client
-    SClient rival;
+    SClient rakip;
     //eşleşme durumu
     private List<Ship> ships;
 
     public boolean paired = false;
-    public int hp = 2;
+    public int hp = 17;
     public boolean restartRequest = false;
+    public boolean isReady = false;
 
     public SClient(Socket gelenSoket, int id) {
         this.soket = gelenSoket;
@@ -40,7 +41,7 @@ public class SClient {
         this.name = "NoName";
         this.displayName = "NoName";
         this.paired = false;
-        this.rival = null;
+        this.rakip = null;
         this.hp = 17;
         this.restartRequest = false;
         this.ships = new ArrayList<>();
@@ -70,26 +71,26 @@ public class SClient {
     //her clientin ayrı bir dinleme thredi var
     class Listen extends Thread {
 
-        SClient TheClient;
+        SClient Client;
 
         //thread nesne alması için yapıcı metod
-        Listen(SClient TheClient) {
-            this.TheClient = TheClient;
+        Listen(SClient Client) {
+            this.Client = Client;
         }
 
         public void run() {
             //client bağlı olduğu sürece dönsün
             try {
-                while (TheClient.soket.isConnected()) {
+                while (Client.soket.isConnected()) {
 
                     //mesajı bekleyen kod satırı
-                    Message received = (Message) (TheClient.sInput.readObject());
+                    Message received = (Message) (Client.sInput.readObject());
                     //mesaj gelirse bu satıra geçer
                     //mesaj tipine göre işlemlere ayır
                     switch (received.type) {
                         case Name:
                             String originalName = received.content.toString();
-                            TheClient.displayName = originalName;
+                            Client.displayName = originalName;
 
                             String uniqueName = originalName;
                             int suffix = 1;
@@ -101,39 +102,39 @@ public class SClient {
                                 }
                             }
 
-                            TheClient.name = uniqueName;
+                            Client.name = uniqueName;
 
                             Message nameMsg = new Message(Message.Message_Type.Name);
                             nameMsg.content = uniqueName;
-                            Server.Send(TheClient, nameMsg);
+                            Server.Send(Client, nameMsg);
 
-                            TheClient.pairThread.start();
+                            Client.pairThread.start();
                             break;
 
                         case Disconnect:
                             
     try {
-                            TheClient.sInput.close();
-                            TheClient.sOutput.close();
-                            TheClient.soket.close();
+                            Client.sInput.close();
+                            Client.sOutput.close();
+                            Client.soket.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
 
-                        Server.Clients.remove(TheClient);
+                        Server.Clients.remove(Client);
                         break;
 
                         case Text:
                             //gelen metni direkt rakibe gönder
-                            Server.Send(TheClient.rival, received);
+                            Server.Send(Client.rakip, received);
                             break;
                         case Text2:
                             //gelen metni direkt rakibe gönder
-                            Server.Send(TheClient.rival, received);
+                            Server.Send(Client.rakip, received);
                             break;
                         case Selected:
                             //gelen seçim yapıldı mesajını rakibe gönder
-                            Server.Send(TheClient.rival, received);
+                            Server.Send(Client.rakip, received);
                             break;
 
                         case Bitis:
@@ -142,34 +143,54 @@ public class SClient {
                             // Rakibe de bildir
                             Message notifyRival = new Message(Message.Message_Type.Bitis);
                             notifyRival.content = "Kaybettiniz! Kazanan: " + received.sender;
-                            Server.Send(TheClient.rival, notifyRival);
+                            Server.Send(Client.rakip, notifyRival);
 
                             // Gönderen oyuncuya da kazanma mesajı gönder
                             Message notifyWinner = new Message(Message.Message_Type.Bitis);
                             notifyWinner.content = "Tebrikler! Oyunu kazandınız.";
-                            Server.Send(TheClient, notifyWinner);
+                            Server.Send(Client, notifyWinner);
                             break;
                         case PairStatus:
                             // Eşleşme durumunu kontrol et
                             Message reply = new Message(Message.Message_Type.Text);
-                            if (TheClient.paired) {
-                                reply.content = "Eşleşme sağlandı! Rakip: " + TheClient.rival.name + " start'a basabilirsiniz...";
+                            if (Client.paired) {
+                                reply.content = "Eşleşme sağlandı! Rakip: " + Client.rakip.name + " start'a basabilirsiniz...";
                             } else {
                                 reply.content = "Hala rakip bekleniyor. Rakip ismi gördüğünüzde start'a basabilirsiniz...";
                             }
-                            Server.Send(TheClient, reply);
+                            Server.Send(Client, reply);
                             break;
 
                         case Ready:
                             System.out.println("[SERVER] Ready message received");
-                            // Rakibe forward et → onun clientinde rivalIsReady = true olsun
-                            Server.Send(TheClient.rival, received);
+
+                            Client.isReady = true;
+
+                            // Rakibe de haber ver
+                            Server.Send(Client.rakip, received);
+
+                            // Eğer her iki oyuncu da hazırsa → sırayı belirle
+                            if (Client.rakip != null && Client.rakip.isReady) {
+                                System.out.println("[SERVER] Her iki oyuncu hazır. Sıra belirleniyor...");
+
+                                // Rastgele bir oyuncuya ilk hamle hakkı ver
+                                boolean clientStarts = new java.util.Random().nextBoolean();
+
+                                Message turnForThis = new Message(Message.Message_Type.Turn);
+                                turnForThis.content = String.valueOf(clientStarts); // true ya da false
+
+                                Message turnForrakip = new Message(Message.Message_Type.Turn);
+                                turnForrakip.content = String.valueOf(!clientStarts);
+
+                                Server.Send(Client, turnForThis);
+                                Server.Send(Client.rakip, turnForrakip);
+                            }
                             break;
 
                         case SHIP_INFO:
                             System.out.println("Gemi bilgileri alındı: " + received.content);
                             String[] shipData = received.content.toString().split(";");
-                            TheClient.ships = new ArrayList<>();
+                            Client.ships = new ArrayList<>();
 
                             for (String data : shipData) {
                                 if (data.isEmpty()) {
@@ -184,7 +205,7 @@ public class SClient {
 
                                 Ship ship = new Ship("", length); // İsim önemsiz, uzunluk kritik
                                 ship.setPos(row, col, isVertical);
-                                TheClient.ships.add(ship);
+                                Client.ships.add(ship);
 
                                 System.out.println("Gemi oluşturuldu: " + row + "," + col
                                         + " Uzunluk:" + length
@@ -198,7 +219,7 @@ public class SClient {
                             int attackCol = Integer.parseInt(coords[1]);
 
                             boolean isHit = false;
-                            for (Ship ship : TheClient.ships) {
+                            for (Ship ship : Client.ships) {
                                 if (ship.checkHit(attackRow, attackCol)) {
                                     isHit = true;
                                     break;
@@ -208,7 +229,7 @@ public class SClient {
                             // Sonucu gönder
                             Message resultMsg = new Message(Message.Message_Type.AttackResult);
                             resultMsg.content = attackRow + "," + attackCol + "," + isHit;
-                            Server.Send(TheClient.rival, resultMsg); // Saldıran oyuncuya sonuç
+                            Server.Send(Client.rakip, resultMsg); // Saldıran oyuncuya sonuç
 
                             break;
 
@@ -221,7 +242,7 @@ public class SClient {
                             boolean isHitt = false;
 
                             // 🔍 Rakibin gemileri kontrol ediliyor
-                            for (Ship ship : TheClient.rival.ships) {
+                            for (Ship ship : Client.rakip.ships) {
                                 if (ship.checkHit(row, col)) {
                                     isHitt = true;
 
@@ -230,65 +251,75 @@ public class SClient {
                             }
                             // Rakibin HP'sini güncelle
                             if (isHitt) {
-                                TheClient.rival.hp--;
-                                System.out.println("Rakibin HP: " + TheClient.rival.hp);
+                                Client.rakip.hp--;
+                                System.out.println("Rakibin HP: " + Client.rakip.hp);
 
-                                if (TheClient.rival.hp == 0) {
+                                if (Client.rakip.hp == 0) {
                                     System.out.println(">>> Rakibin tüm gemileri vuruldu, oyun bitiyor!");
 
                                     Message winnerMsg = new Message(Message.Message_Type.Bitis);
-                                    winnerMsg.content = "Tebrikler! Kazandınız." + TheClient.name;
-                                    Server.Send(TheClient, winnerMsg);  // saldıran kazandı
+                                    winnerMsg.content = "Tebrikler! Kazandınız." + Client.name;
+                                    Server.Send(Client, winnerMsg);  // saldıran kazandı
 
                                     Message loserMsg = new Message(Message.Message_Type.Bitis);
-                                    loserMsg.content = "Tüm gemileriniz vuruldu. Kaybettiniz." + TheClient.rival.name;
-                                    Server.Send(TheClient.rival, loserMsg);
+                                    loserMsg.content = "Tüm gemileriniz vuruldu. Kaybettiniz." + Client.rakip.name;
+                                    Server.Send(Client.rakip, loserMsg);
                                 }
                             }
 
-                            // 🎯 Saldıran kişiye sonuç gönder (kendi enemyBoard’unu güncelleyecek)
+                            //Saldıran kişiye sonuç gönder (kendi enemyBoard’unu güncelleyecek)
                             Message resultToAttacker = new Message(Message.Message_Type.AttackResult);
                             resultToAttacker.content = row + "," + col + "," + isHitt;
-                            resultToAttacker.sender = TheClient.name;
-                            Server.Send(TheClient, resultToAttacker);
+                            resultToAttacker.sender = Client.name;
+                            Server.Send(Client, resultToAttacker);
 
                             Message resultToDefender = new Message(Message.Message_Type.AttackResult);
                             resultToDefender.content = row + "," + col + "," + isHitt;
-                            resultToDefender.sender = TheClient.name;
-                            Server.Send(TheClient.rival, resultToDefender);
+                            resultToDefender.sender = Client.name;
+                            Server.Send(Client.rakip, resultToDefender);
 
-                            System.out.println("Sonuç iki tarafa da gönderildi: " + row + "," + col + " → " + (isHitt ? "HIT" : "MISS"));
+                            
+                            //Sırayı değiştir
+                            Message newTurnForAttacker = new Message(Message.Message_Type.Turn);
+                            newTurnForAttacker.content = "false";
+                            Server.Send(Client, newTurnForAttacker);
+
+                            Message newTurnForDefender = new Message(Message.Message_Type.Turn);
+                            newTurnForDefender.content = "true";
+                            Server.Send(Client.rakip, newTurnForDefender);
+
+                            System.out.println("Sıra değiştirildi → " + Client.rakip.name + " şimdi oynayabilir.");
                             break;
 
                         case RestartRequest:
-                            TheClient.restartRequest = true;
-                            System.out.println(TheClient.name + " tekrar başlamak istiyor.");
+                            Client.restartRequest = true;
+                            System.out.println(Client.name + " tekrar başlamak istiyor.");
 
-                            if (TheClient.rival != null) {
+                            if (Client.rakip != null) {
                                 Message notifyMsg = new Message(Message.Message_Type.Text2);
-                                notifyMsg.content = TheClient.name + " tekrar başlamak istiyor.";
-                                Server.Send(TheClient.rival, notifyMsg);
+                                notifyMsg.content = Client.name + " tekrar başlamak istiyor.";
+                                Server.Send(Client.rakip, notifyMsg);
                             }
 
                             // Eğer rakip de hazırsa yeni oyunu başlat
-                            if (TheClient.rival != null && TheClient.rival.restartRequest) {
+                            if (Client.rakip != null && Client.rakip.restartRequest) {
                                 System.out.println("Her iki oyuncu tekrar başlamak istiyor. Yeni oyun başlatılıyor.");
                                 Message notifyMsg = new Message(Message.Message_Type.Text2);
                                 notifyMsg.content = "Her iki oyuncu tekrar başlamak istiyor. Yeni oyun başlatılıyor.";
-                                Server.Send(TheClient.rival, notifyMsg);
+                                Server.Send(Client.rakip, notifyMsg);
 
                                 // Reset flags
-                                TheClient.restartRequest = false;
-                                TheClient.rival.restartRequest = false;
-                                TheClient.rival.hp = 17;
-                                TheClient.hp = 17;
+                                Client.restartRequest = false;
+                                Client.rakip.restartRequest = false;
+                                Client.rakip.hp = 17;
+                                Client.hp = 17;
 
                                 // Yeni eşleşme mesajı gönder
                                 Message msgTo1 = new Message(Message.Message_Type.Start);
-                                Server.Send(TheClient, msgTo1);
+                                Server.Send(Client, msgTo1);
 
                                 Message msgTo2 = new Message(Message.Message_Type.Start);
-                                Server.Send(TheClient.rival, msgTo2);
+                                Server.Send(Client.rakip, msgTo2);
                             }
                             break;
 
@@ -298,42 +329,42 @@ public class SClient {
             } catch (IOException ex) {
                 Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
                 //client bağlantısı koparsa listeden sil
-                Server.Clients.remove(TheClient);
+                Server.Clients.remove(Client);
 
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
                 //client bağlantısı koparsa listeden sil
-                Server.Clients.remove(TheClient);
+                Server.Clients.remove(Client);
             } finally {
                 try {
-                    TheClient.sInput.close();
-                    TheClient.sOutput.close();
-                    TheClient.soket.close();
+                    Client.sInput.close();
+                    Client.sOutput.close();
+                    Client.soket.close();
                 } catch (IOException ex) {
                     Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
                 // 🔥 Listeden kesin silme: aynı referans veya aynı isimde olan
                 Server.Clients.removeIf(client
-                        -> client == TheClient
-                        || client.name.equals(TheClient.name)
+                        -> client == Client
+                        || client.name.equals(Client.name)
                         || !client.soket.isConnected()
                 );
 
-                if (TheClient.rival != null) {
+                if (Client.rakip != null) {
                     Message infoMsg = new Message(Message.Message_Type.Text2);
                     infoMsg.content = "Rakibiniz oyunu terk etti. Yeni rakip bekleniyor.";
-                    Server.Send(TheClient.rival, infoMsg);
+                    Server.Send(Client.rakip, infoMsg);
 
                     Message clearRivalMsg = new Message(Message.Message_Type.RivalDisconnected);
-                    Server.Send(TheClient.rival, clearRivalMsg);
+                    Server.Send(Client.rakip, clearRivalMsg);
 
-                    TheClient.rival.rival = null;
-                    TheClient.rival = null;
-                    TheClient.rival.paired = false;
+                    Client.rakip.rakip = null;
+                    Client.rakip = null;
+                    Client.rakip.paired = false;
 
-                    TheClient.rival.pairThread = new PairingThread(TheClient.rival);
-                    TheClient.rival.pairThread.start();
+                    Client.rakip.pairThread = new PairingThread(Client.rakip);
+                    Client.rakip.pairThread.start();
                 }
 
                 Server.Display("Client gitti...");
@@ -346,15 +377,15 @@ public class SClient {
     //her clientin ayrı bir eşleştirme thredi var
     class PairingThread extends Thread {
 
-        SClient TheClient;
+        SClient Client;
 
-        PairingThread(SClient TheClient) {
-            this.TheClient = TheClient;
+        PairingThread(SClient Client) {
+            this.Client = Client;
         }
 
         public void run() {
             //client bağlı ve eşleşmemiş olduğu durumda dön
-            while (TheClient.soket.isConnected() && TheClient.paired == false) {
+            while (Client.soket.isConnected() && Client.paired == false) {
                 try {
                     //lock mekanizması
                     //sadece bir client içeri grebilir
@@ -362,24 +393,24 @@ public class SClient {
                     Server.pairTwo.acquire(1);
 
                     //client eğer eşleşmemişse gir
-                    if (!TheClient.paired) {
+                    if (!Client.paired) {
                         SClient crival = null;
                         //eşleşme sağlanana kadar dön
-                        while (crival == null && TheClient.soket.isConnected()) {
+                        while (crival == null && Client.soket.isConnected()) {
                             //liste içerisinde eş arıyor
-                            for (SClient clnt : Server.Clients) {
-                                if (TheClient != clnt
-                                        && clnt.rival == null
-                                        && clnt.soket != null
-                                        && clnt.soket.isConnected()
-                                        && !clnt.soket.isClosed()) {
+                            for (SClient client : Server.Clients) {
+                                if (Client != client
+                                        && client.rakip == null
+                                        && client.soket != null
+                                        && client.soket.isConnected()
+                                        && !client.soket.isClosed()) {
 
                                     // eşleşme sağlandı
-                                    crival = clnt;
+                                    crival = client;
                                     crival.paired = true;
-                                    crival.rival = TheClient;
-                                    TheClient.rival = crival;
-                                    TheClient.paired = true;
+                                    crival.rakip = Client;
+                                    Client.rakip = crival;
+                                    Client.paired = true;
                                     break;
                                 }
                             }
@@ -392,12 +423,12 @@ public class SClient {
                         //her iki tarafada eşleşme mesajı gönder 
                         //oyunu başlat
                         Message msg1 = new Message(Message.Message_Type.RivalConnected);
-                        msg1.content = TheClient.name;
-                        Server.Send(TheClient.rival, msg1);
+                        msg1.content = Client.name;
+                        Server.Send(Client.rakip, msg1);
 
                         Message msg2 = new Message(Message.Message_Type.RivalConnected);
-                        msg2.content = TheClient.rival.name;
-                        Server.Send(TheClient, msg2);
+                        msg2.content = Client.rakip.name;
+                        Server.Send(Client, msg2);
                     }
                     //lock mekanizmasını servest bırak
                     //bırakılmazsa deadlock olur.
