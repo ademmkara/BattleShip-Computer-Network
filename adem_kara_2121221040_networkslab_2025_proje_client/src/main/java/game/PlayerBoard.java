@@ -150,6 +150,8 @@ public void resetBoard() {
         }
         return positions.toString();
     }
+    
+    
 // PlayerBoard.java'daki getShipPositions()
     //Checks if a specified cell is occupied by any of the ships in the array of Ship,
     //returning true if it does (also subtracts 1 from hp and places hit marker) and false if it does not.

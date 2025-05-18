@@ -125,6 +125,8 @@ public class GameBoard extends javax.swing.JFrame {
         btnRestart = new javax.swing.JButton();
         txt_rival_name = new javax.swing.JTextField();
         txt_name = new javax.swing.JTextField();
+        btnHorizantal = new javax.swing.JButton();
+        btnVertical = new javax.swing.JButton();
         pnl_message = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txt_send = new javax.swing.JTextArea();
@@ -190,47 +192,23 @@ public class GameBoard extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout pnl_BoardLayout = new javax.swing.GroupLayout(pnl_Board);
-        pnl_Board.setLayout(pnl_BoardLayout);
-        pnl_BoardLayout.setHorizontalGroup(
-            pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnl_BoardLayout.createSequentialGroup()
-                .addGap(333, 333, 333)
-                .addComponent(btnRestart, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(pnl_BoardLayout.createSequentialGroup()
-                .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnl_BoardLayout.createSequentialGroup()
-                        .addGap(111, 111, 111)
-                        .addComponent(btnFire, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnl_BoardLayout.createSequentialGroup()
-                        .addGap(102, 102, 102)
-                        .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 267, Short.MAX_VALUE)
-                .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnl_BoardLayout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(169, 169, 169))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_BoardLayout.createSequentialGroup()
-                        .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(135, 135, 135))))
-        );
-        pnl_BoardLayout.setVerticalGroup(
-            pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnl_BoardLayout.createSequentialGroup()
-                .addGap(53, 53, 53)
-                .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnFire, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(53, 53, 53)
-                .addComponent(btnRestart, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(137, 137, 137))
-        );
+        btnHorizantal.setBackground(new java.awt.Color(255, 204, 0));
+        btnHorizantal.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
+        btnHorizantal.setText("Horizantal");
+        btnHorizantal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHorizantalActionPerformed(evt);
+            }
+        });
+
+        btnVertical.setBackground(new java.awt.Color(51, 153, 0));
+        btnVertical.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
+        btnVertical.setText("Vertical");
+        btnVertical.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerticalActionPerformed(evt);
+            }
+        });
 
         pnl_message.setBackground(new java.awt.Color(102, 102, 102));
 
@@ -288,20 +266,75 @@ public class GameBoard extends javax.swing.JFrame {
                 .addContainerGap(247, Short.MAX_VALUE))
         );
 
+        javax.swing.GroupLayout pnl_BoardLayout = new javax.swing.GroupLayout(pnl_Board);
+        pnl_Board.setLayout(pnl_BoardLayout);
+        pnl_BoardLayout.setHorizontalGroup(
+            pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnl_BoardLayout.createSequentialGroup()
+                .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnl_BoardLayout.createSequentialGroup()
+                        .addGap(333, 333, 333)
+                        .addComponent(btnRestart, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(385, 385, 385))
+                    .addGroup(pnl_BoardLayout.createSequentialGroup()
+                        .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnl_BoardLayout.createSequentialGroup()
+                                .addGap(111, 111, 111)
+                                .addComponent(btnFire, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(pnl_BoardLayout.createSequentialGroup()
+                                .addGap(102, 102, 102)
+                                .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 266, Short.MAX_VALUE)
+                        .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_BoardLayout.createSequentialGroup()
+                                .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(49, 49, 49)
+                                .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnHorizantal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnVertical, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(45, 45, 45))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_BoardLayout.createSequentialGroup()
+                                .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(112, 112, 112)))))
+                .addComponent(pnl_message, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        pnl_BoardLayout.setVerticalGroup(
+            pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnl_BoardLayout.createSequentialGroup()
+                .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnl_BoardLayout.createSequentialGroup()
+                        .addGap(53, 53, 53)
+                        .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 444, Short.MAX_VALUE)
+                        .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnFire, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(53, 53, 53))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_BoardLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnHorizantal)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnVertical)
+                        .addGap(39, 39, 39)))
+                .addComponent(btnRestart, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(137, 137, 137))
+            .addComponent(pnl_message, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(pnl_Board, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnl_message, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(105, 105, 105))
+                .addContainerGap(117, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(pnl_Board, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(pnl_message, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -315,11 +348,13 @@ public class GameBoard extends javax.swing.JFrame {
             Client.Send(readyMsg);
             JOptionPane.showMessageDialog(null, "Gemi Pozisyonlari alindi, Rakip Hazir oldugunda saldirabiliceksiniz.");
             btnReady.setEnabled(false);
+            btnHorizantal.setEnabled(false);
+            btnVertical.setEnabled(false);
             if (GameBoard.rivalIsReady) {
                 btnFire.setEnabled(true);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Lütfen gemilerinizi yerleştiriniz.");
+            JOptionPane.showMessageDialog(null, "Lütfen gemilerinizi yerleştiriniz.\nGemi Boyutları: 5-4-3-3-2");
         }
     }//GEN-LAST:event_btnReadyActionPerformed
 
@@ -370,6 +405,14 @@ public class GameBoard extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_rival_nameActionPerformed
 
+    private void btnHorizantalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHorizantalActionPerformed
+        playerBoard.setIsVertical(false);
+    }//GEN-LAST:event_btnHorizantalActionPerformed
+
+    private void btnVerticalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerticalActionPerformed
+        playerBoard.setIsVertical(true);
+    }//GEN-LAST:event_btnVerticalActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -407,8 +450,10 @@ public class GameBoard extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnFire;
+    public javax.swing.JButton btnHorizantal;
     public javax.swing.JButton btnReady;
     public javax.swing.JButton btnRestart;
+    public javax.swing.JButton btnVertical;
     public javax.swing.JButton btn_send_message;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

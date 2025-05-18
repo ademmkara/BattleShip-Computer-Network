@@ -54,11 +54,13 @@ class Listen extends Thread {
                         }
 
                         Game.ThisGame.btn_send_message.setEnabled(true);
+                        
                         break;
 
                     case RivalDisconnected:
 
                         GameBoard.ThisGame.txt_rival_name.setText("Rival");
+                        Game.ThisGame.txt_rival_name.setText("Rival");
                         GameBoard.rivalIsReady = false;
                         GameBoard.enemyBoard.resetBoard();
                         GameBoard.playerBoard.resetBoard();
@@ -94,40 +96,33 @@ class Listen extends Thread {
                         int resultRow = Integer.parseInt(result[0]);
                         int resultCol = Integer.parseInt(result[1]);
                         boolean hit = Boolean.parseBoolean(result[2]);
-                        String sender = received.sender;  // saldırıyı yapanın adı
+                        String sender = received.sender;
 
                         SwingUtilities.invokeLater(() -> {
                             String myName = Game.ThisGame.txt_name.getText();
 
                             if (sender.equals(myName)) {
-                                // Ben saldırmışım → enemyBoard (sol)
+                                // Ben saldırmışım
                                 if (hit) {
                                     GameBoard.ThisGame.enemyBoard.placeHitMarker(resultRow, resultCol);
-                                    Game.ThisGame.txt_receive.setText("Vurdun! 🔥");
+                                    GameBoard.ThisGame.txt_receive.setText("Vurdun!");
                                 } else {
                                     GameBoard.ThisGame.enemyBoard.placeMissMarker(resultRow, resultCol);
-                                    Game.ThisGame.txt_receive.setText("Iskaladın! 💦");
+                                    GameBoard.ThisGame.txt_receive.setText("Iskaladın!");
                                 }
                             } else {
-                                // Ben vuruldum → playerBoard (sağ)
+                                // Rakip saldırmış
                                 if (hit) {
                                     GameBoard.ThisGame.playerBoard.placeHitMarker(resultRow, resultCol);
-                                    Game.ThisGame.txt_receive.setText("Rakip vurdu! 🔥");
+                                    GameBoard.ThisGame.txt_receive.setText("Rakip vurdu!");
                                 } else {
                                     GameBoard.ThisGame.playerBoard.placeMissMarker(resultRow, resultCol);
-                                    Game.ThisGame.txt_receive.setText("Rakip ıskaladı! 💦");
+                                    GameBoard.ThisGame.txt_receive.setText("Rakip ıskaladı!");
                                 }
                             }
-
                         });
 
-                        // Sadece ben saldırdıysam, btnFire tekrar açılmalı
-                        if (sender.equals(Game.ThisGame.txt_name.getText())) {
-                            GameBoard.ThisGame.btnFire.setEnabled(false); // saldırdım, sıra rakipte → kapanmalı
-                        } else {
-                            GameBoard.ThisGame.btnFire.setEnabled(true);  // rakip saldırdı, şimdi sıra bende
-                        }
-
+                        // 🔥 Artık burada btnFire kontrolü YOK!
                         break;
 
                     case Attack:

@@ -197,15 +197,28 @@ public class Game extends javax.swing.JFrame {
             txt_name.setEnabled(false);
 
             btn_send_message.setEnabled(true);
-            ThisGame.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            
+            this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                int result = JOptionPane.showConfirmDialog(
+                        Game.this,
+                        "Oyunu kapatmak istediğinize emin misiniz?",
+                        "Çıkış Onayı",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (result == JOptionPane.YES_OPTION) {
                     Client.Stop();
+                    dispose(); // pencereyi kapat
                     Message disconnect = new Message(Message.Message_Type.Disconnect);
                     Client.Send(disconnect);
-
+                } else {
+                    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); // kapatma iptal
                 }
-            });
+            }
+        });
 
         }
 

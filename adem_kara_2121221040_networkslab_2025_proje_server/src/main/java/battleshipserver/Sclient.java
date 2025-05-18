@@ -241,7 +241,7 @@ public class SClient {
 
                             boolean isHitt = false;
 
-                            // 🔍 Rakibin gemileri kontrol ediliyor
+                            // Rakibin gemileri kontrol ediliyor
                             for (Ship ship : Client.rakip.ships) {
                                 if (ship.checkHit(row, col)) {
                                     isHitt = true;
@@ -344,7 +344,7 @@ public class SClient {
                     Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                // 🔥 Listeden kesin silme: aynı referans veya aynı isimde olan
+                //Listeden kesin silme: aynı referans veya aynı isimde olan
                 Server.Clients.removeIf(client
                         -> client == Client
                         || client.name.equals(Client.name)
@@ -353,7 +353,7 @@ public class SClient {
 
                 if (Client.rakip != null) {
                     Message infoMsg = new Message(Message.Message_Type.Text2);
-                    infoMsg.content = "Rakibiniz oyunu terk etti. Yeni rakip bekleniyor.";
+                    infoMsg.content = "Rakibiniz oyunu terk etti. Yeni rakip bekleniyor. \nRakip bağlandığında isim görülecek \nİsim gördüğünüzde gemileri dizebilirsiniz.";
                     Server.Send(Client.rakip, infoMsg);
 
                     Message clearRivalMsg = new Message(Message.Message_Type.RivalDisconnected);
