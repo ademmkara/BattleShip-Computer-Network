@@ -113,6 +113,8 @@ public class GameBoard extends javax.swing.JFrame {
         GameBoard.rivalIsReady = false;
 
         txt_receive.setText("Yeni oyun başladı. Gemilerinizi yerleştirin.");
+        btnHorizantal.setEnabled(true);
+        btnVertical.setEnabled(true);
     }
 
 
@@ -328,9 +330,7 @@ public class GameBoard extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(pnl_Board, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(117, Short.MAX_VALUE))
+            .addComponent(pnl_Board, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

@@ -182,9 +182,7 @@ public class Game extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_connectActionPerformed
-        //scp -i "C:\Users\cvsbilisim\Desktop\battleship-servers.pem" "C:\Users\cvsbilisim\.m2\repository\com\mycompany\adem_kara_2121221040_networkslab_2025_proje_server\1.0-SNAPSHOT\adem_kara_2121221040_networkslab_2025_proje_server-1.0-SNAPSHOT.jar" ubuntu@13.60.186.154:/home/ubuntu
-        //ssh -i "C:\Users\cvsbilisim\Desktop\battleship-servers.pem" ubuntu@13.60.186.154
-        //java -jar
+       
         if (txt_name.getText().isEmpty()) {
 
             JOptionPane.showMessageDialog(null, "Lütfen bir isim giriniz.");

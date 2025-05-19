@@ -126,7 +126,7 @@ public void resetBoard() {
     ship[3] = new Ship("Submarine", 3);
     ship[4] = new Ship("Destroyer", 2);
 
-    this.hp = 2; // ya da 17 gibi toplam hücre sayısı
+    this.hp = 17; // ya da 17 gibi toplam hücre sayısı
     this.index = 0;
     this.isVertical = false;
     this.shipsPlaced = false;
@@ -146,15 +146,10 @@ public void resetBoard() {
             positions.append(s.getRow()).append(",")
                     .append(s.getCol()).append(",")
                     .append(s.isVertical()).append(",")
-                    .append(s.getLength()).append(";");  // Uzunluk bilgisini ekleyin
+                    .append(s.getLength()).append(";");  
         }
         return positions.toString();
     }
-    
-    
-// PlayerBoard.java'daki getShipPositions()
-    //Checks if a specified cell is occupied by any of the ships in the array of Ship,
-    //returning true if it does (also subtracts 1 from hp and places hit marker) and false if it does not.
 
    public boolean checkEnemyShot(int row, int col) {
     System.out.println("Vuruş kontrolü: " + row + "," + col);
@@ -223,20 +218,20 @@ public void resetBoard() {
             }
         }
     }
-
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-        PlayerBoard b = new PlayerBoard();
-        b.drawBoard();
-
-        //b.setIsVertical(true);
-        JFrame f1 = new JFrame();
-        f1.setSize(500, 500);
-        f1.setLayout(null);
-        f1.add(b);
-        f1.setVisible(true);
-
-    }
+//
+//    public static void main(String[] args) {
+//        // TODO Auto-generated method stub
+//
+//        PlayerBoard b = new PlayerBoard();
+//        b.drawBoard();
+//
+//        //b.setIsVertical(true);
+//        JFrame f1 = new JFrame();
+//        f1.setSize(500, 500);
+//        f1.setLayout(null);
+//        f1.add(b);
+//        f1.setVisible(true);
+//
+//    }
 
 }

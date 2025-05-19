@@ -23,14 +23,12 @@ class Listen extends Thread {
                 //mesaj gelmesini bloking olarak dinyelen komut
                 Message received = (Message) (sInput.readObject());
 
-                // Log received message type
-                System.out.println("[CLIENT] Received message of type: " + received.type);
 
                 //mesaj gelirse bu satıra geçer
                 //mesaj tipine göre yapılacak işlemi ayır.
                 switch (received.type) {
                     case Name:
-                        System.out.println("[CLIENT] Name message received: " + received.content);
+
 
                         String uniqueName = received.content.toString();
 
@@ -41,7 +39,7 @@ class Listen extends Thread {
 
                     case RivalConnected:
                         String name = received.content.toString();
-                        System.out.println("[CLIENT] Rival connected: " + name);
+
 
                         // Giriş ekranı üzerindeki rakip adı
                         if (Game.ThisGame != null) {
@@ -70,26 +68,27 @@ class Listen extends Thread {
                         GameBoard.ThisGame.btnFire.setEnabled(false);
                         GameBoard.ThisGame.btnReady.setEnabled(true);
                         GameBoard.ThisGame.btnRestart.setVisible(false);
+                        GameBoard.ThisGame.btnHorizantal.setEnabled(true);
+                        GameBoard.ThisGame.btnVertical.setEnabled(true);
                         //GameBoard.ThisGame.txt_receive.setText(received.content.toString());
                         break;
 
                     case Disconnect:
-                        System.out.println("[CLIENT] Disconnect message received");
+
                         break;
 
                     case Text:
-                        System.out.println("[CLIENT] Text message received: " + received.content);
+
                         Game.ThisGame.txt_receive.setText(received.content.toString());
                         break;
 
                     case Text2:
-                        System.out.println("[CLIENT] Text message received: " + received.content);
                         GameBoard.ThisGame.txt_receive.setText(received.content.toString());
                         break;
 
-                    case Selected:
-                        System.out.println("[CLIENT] Selected message received: " + received.content);
-                        break;
+//                    case Selected:
+//                        System.out.println("[CLIENT] Selected message received: " + received.content);
+//                        break;
 
                     case AttackResult:
                         String[] result = received.content.toString().split(",");
@@ -126,7 +125,6 @@ class Listen extends Thread {
                         break;
 
                     case Attack:
-                        System.out.println("[CLIENT] Attack message received: " + received.content);
                         // Bu mesaj rakipten geldiğinde işlem yap
                         if (GameBoard.ThisGame != null) {
                             String[] coords = received.content.toString().split(",");
@@ -144,7 +142,6 @@ class Listen extends Thread {
                         break;
 
                     case Bitis:
-                        System.out.println("[CLIENT] Bitis mesajı alındı: " + received.content);
 
                         GameBoard.ThisGame.btnFire.setVisible(false);
                         GameBoard.ThisGame.txt_receive.setText(received.content.toString());
@@ -158,7 +155,6 @@ class Listen extends Thread {
                         break;
 
                     case Ready:
-                        System.out.println("[CLIENT] Ready message received");
 
                         GameBoard.rivalIsReady = true;
 
@@ -169,15 +165,12 @@ class Listen extends Thread {
                         break;
 
                     case SHIP_INFO:
-                        System.out.println("[CLIENT] Ship info message received: " + received.content);
                         break;
 
                     case PairStatus:
-                        System.out.println("[CLIENT] Pair status message received: " + received.content);
                         break;
 
                     case Start:
-                        System.out.println("[CLIENT] Yeni oyun başlatılıyor...");
                         SwingUtilities.invokeLater(() -> {
                             GameBoard.ThisGame.initializeNewGame();
                         });
@@ -195,25 +188,25 @@ class Listen extends Thread {
                                 allowFire ? "Sıra sizde!" : "Rakip hamlesi bekleniyor..."
                         );
                         break;
+                        
 
                     default:
-                        System.out.println("[CLIENT] Unknown message type received: " + received.type);
                         break;
                 }
 
             } catch (IOException ex) {
-                System.out.println("[CLIENT] IOException in Listen thread: " + ex.getMessage());
+
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 //Client.Stop();
                 break;
             } catch (ClassNotFoundException ex) {
-                System.out.println("[CLIENT] ClassNotFoundException in Listen thread: " + ex.getMessage());
+
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 //Client.Stop();
                 break;
             }
         }
-        System.out.println("[CLIENT] Listen thread ending");
+
     }
 }
 
@@ -243,10 +236,10 @@ public class Client {
 
             Message msg = new Message(Message.Message_Type.Name);
             msg.content = Game.ThisGame.txt_name.getText();
-            System.out.println("[CLIENT] Sending Name message: " + msg.content);
+
             Client.Send(msg);
         } catch (IOException ex) {
-            System.out.println("[CLIENT] Error in Start: " + ex.getMessage());
+
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -255,7 +248,7 @@ public class Client {
     public static void Stop() {
         try {
             if (Client.socket != null && !Client.socket.isClosed()) {
-                System.out.println("[CLIENT] Stopping client connection");
+
 
                 // Önce Disconnect mesajını gönder
                 Message disconnectMsg = new Message(Message.Message_Type.Disconnect);
@@ -269,25 +262,29 @@ public class Client {
                 Client.socket.close();
             }
         } catch (IOException ex) {
-            System.out.println("[CLIENT] Error in Stop: " + ex.getMessage());
+
         }
     }
 
     public static void Display(String msg) {
-        System.out.println("[CLIENT] " + msg);
+
     }
 
     //mesaj gönderme fonksiyonu
     public static void Send(Message msg) {
-        try {
-            System.out.println("[CLIENT] Sending message of type: " + msg.type);
-            if (msg.content != null) {
-                System.out.println("[CLIENT] Message content: " + msg.content.toString());
-            }
-            Client.sOutput.writeObject(msg);
-        } catch (IOException ex) {
-            System.out.println("[CLIENT] Error in Send: " + ex.getMessage());
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+    try {
+        if (socket == null || socket.isClosed()) {
+            return; 
         }
+
+        if (msg.content != null) {
+        }
+
+        sOutput.writeObject(msg);
+        sOutput.flush();
+    } catch (IOException ex) {
+        
     }
+}
+
 }

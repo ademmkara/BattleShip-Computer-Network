@@ -49,7 +49,7 @@ public class SClient {
             this.sOutput = new ObjectOutputStream(this.soket.getOutputStream());
             this.sInput = new ObjectInputStream(this.soket.getInputStream());
         } catch (IOException ex) {
-            Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
         }
         //thread nesneleri
         this.listenThread = new Listen(this);
@@ -62,10 +62,13 @@ public class SClient {
         try {
             this.sOutput.writeObject(message);
         } catch (IOException ex) {
-            Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+           
         }
 
     }
+    
+    
+    
 
     //client dinleme threadi
     //her clientin ayrı bir dinleme thredi var
@@ -118,7 +121,7 @@ public class SClient {
                             Client.sOutput.close();
                             Client.soket.close();
                         } catch (IOException e) {
-                            e.printStackTrace();
+//                            e.printStackTrace();
                         }
 
                         Server.Clients.remove(Client);
@@ -132,10 +135,10 @@ public class SClient {
                             //gelen metni direkt rakibe gönder
                             Server.Send(Client.rakip, received);
                             break;
-                        case Selected:
-                            //gelen seçim yapıldı mesajını rakibe gönder
-                            Server.Send(Client.rakip, received);
-                            break;
+//                        case Selected:
+//                            //gelen seçim yapıldı mesajını rakibe gönder
+//                            Server.Send(Client.rakip, received);
+//                            break;
 
                         case Bitis:
                             System.out.println("Oyun bitiş mesajı geldi. Kazanan: " + received.sender);
@@ -171,7 +174,6 @@ public class SClient {
 
                             // Eğer her iki oyuncu da hazırsa → sırayı belirle
                             if (Client.rakip != null && Client.rakip.isReady) {
-                                System.out.println("[SERVER] Her iki oyuncu hazır. Sıra belirleniyor...");
 
                                 // Rastgele bir oyuncuya ilk hamle hakkı ver
                                 boolean clientStarts = new java.util.Random().nextBoolean();
@@ -278,7 +280,6 @@ public class SClient {
                             resultToDefender.sender = Client.name;
                             Server.Send(Client.rakip, resultToDefender);
 
-                            
                             //Sırayı değiştir
                             Message newTurnForAttacker = new Message(Message.Message_Type.Turn);
                             newTurnForAttacker.content = "false";
@@ -327,12 +328,12 @@ public class SClient {
 
                 }
             } catch (IOException ex) {
-                Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
                 //client bağlantısı koparsa listeden sil
                 Server.Clients.remove(Client);
 
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
                 //client bağlantısı koparsa listeden sil
                 Server.Clients.remove(Client);
             } finally {
@@ -341,7 +342,7 @@ public class SClient {
                     Client.sOutput.close();
                     Client.soket.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
                 //Listeden kesin silme: aynı referans veya aynı isimde olan
@@ -382,10 +383,12 @@ public class SClient {
         PairingThread(SClient Client) {
             this.Client = Client;
         }
+        
+        
 
         public void run() {
             //client bağlı ve eşleşmemiş olduğu durumda dön
-            while (Client.soket.isConnected() && Client.paired == false) {
+            while (!Client.soket.isClosed() && Client.paired == false) {
                 try {
                     //lock mekanizması
                     //sadece bir client içeri grebilir
@@ -434,10 +437,12 @@ public class SClient {
                     //bırakılmazsa deadlock olur.
                     Server.pairTwo.release(1);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(PairingThread.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(PairingThread.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
+        
+        
     }
 
 }

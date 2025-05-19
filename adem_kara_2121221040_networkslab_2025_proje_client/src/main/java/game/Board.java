@@ -172,21 +172,21 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Self testing main method
      */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-        Board b = new Board();
-        b.drawBoard();
-
-        b.placeHitMarker(0, 0);
-        b.placeMissMarker(0, 1);
-
-        JFrame f1 = new JFrame();
-        f1.setSize(500, 500);
-        f1.setLayout(null);
-        f1.add(b);
-        f1.setVisible(true);
-
-    }
+//    public static void main(String[] args) {
+//        // TODO Auto-generated method stub
+//        Board b = new Board();
+//        b.drawBoard();
+//
+//        b.placeHitMarker(0, 0);
+//        b.placeMissMarker(0, 1);
+//
+//        JFrame f1 = new JFrame();
+//        f1.setSize(500, 500);
+//        f1.setLayout(null);
+//        f1.add(b);
+//        f1.setVisible(true);
+//
+//    }
 
 }
 

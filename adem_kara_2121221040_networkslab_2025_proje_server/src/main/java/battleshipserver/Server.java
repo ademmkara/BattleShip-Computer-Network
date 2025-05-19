@@ -15,15 +15,18 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+//scp -i "C:\Users\cvsbilisim\Desktop\battleship-servers.pem" "C:\Users\cvsbilisim\.m2\repository\com\mycompany\adem_kara_2121221040_networkslab_2025_proje_server\1.0-SNAPSHOT\adem_kara_2121221040_networkslab_2025_proje_server-1.0-SNAPSHOT.jar" ubuntu@13.60.186.154:/home/ubuntu
+//ssh -i "C:\Users\cvsbilisim\Desktop\battleship-servers.pem" ubuntu@13.60.186.154
+//java -jar
 /**
  *
- * @author 
+ * @author
  */
 //client gelişini dinleme threadi
 class ServerThread extends Thread {
 
     public void run() {
-        
+
         //server kapanana kadar dinle
         while (!Server.serverSocket.isClosed()) {
             try {
@@ -36,7 +39,7 @@ class ServerThread extends Thread {
                 //gelen client soketinden bir sclient nesnesi oluştur
                 //bir adet id de kendimiz verdik
                 SClient nclient = new SClient(clientSocket, Server.IdClient);
-                
+
                 Server.IdClient++;
                 //clienti listeye ekle.
                 Server.Clients.add(nclient);
@@ -65,7 +68,7 @@ public class Server {
 
     //semafor nesnesi
     public static Semaphore pairTwo = new Semaphore(1, true);
-    
+
     // başlaşmak için sadece port numarası veriyoruz
     public static void Start(int openport) {
         try {
@@ -97,31 +100,34 @@ public class Server {
         }
 
     }
-    
+
     public static void cleanupClient(SClient client) {
-    try {
-        if(client.soket != null && !client.soket.isClosed()) {
-            client.soket.close();
+        try {
+            if (client.soket != null && !client.soket.isClosed()) {
+                client.soket.close();
+            }
+            Clients.remove(client);
+            System.out.println("Client temizlendi: " + client.name);
+        } catch (IOException e) {
+            System.err.println("Client temizleme hatası: " + e.getMessage());
         }
-        Clients.remove(client);
-        System.out.println("Client temizlendi: " + client.name);
-    } catch (IOException e) {
-        System.err.println("Client temizleme hatası: " + e.getMessage());
     }
-}
+
     public static synchronized void removeClient(SClient client) {
-    try {
-        if (!Clients.contains(client)) return;
-        
-        Clients.remove(client);
-        System.out.println("Client kaldırıldı: " + client.name);
-        
-        if (client.soket != null && !client.soket.isClosed()) {
-            client.soket.close();
+        try {
+            if (!Clients.contains(client)) {
+                return;
+            }
+
+            Clients.remove(client);
+            System.out.println("Client kaldırıldı: " + client.name);
+
+            if (client.soket != null && !client.soket.isClosed()) {
+                client.soket.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Client kaldırma hatası: " + e.getMessage());
         }
-    } catch (IOException e) {
-        System.err.println("Client kaldırma hatası: " + e.getMessage());
     }
-}
 
 }
