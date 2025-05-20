@@ -231,7 +231,7 @@ public class GameBoard extends javax.swing.JFrame {
         jScrollPane2.setViewportView(txt_receive);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Black", 1, 36)); // NOI18N
-        jLabel1.setText("BATTLESHİP GAME");
+        jLabel1.setText("BATTLESHIP GAME");
 
         javax.swing.GroupLayout pnl_messageLayout = new javax.swing.GroupLayout(pnl_message);
         pnl_message.setLayout(pnl_messageLayout);

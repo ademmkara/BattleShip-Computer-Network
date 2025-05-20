@@ -355,7 +355,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI Black" size="36" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="BATTLESH&#x130;P GAME"/>
+                <Property name="text" type="java.lang.String" value="BATTLESHIP GAME"/>
               </Properties>
             </Component>
           </SubComponents>

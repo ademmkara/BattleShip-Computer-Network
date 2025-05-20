@@ -62,13 +62,34 @@ public class SClient {
         try {
             this.sOutput.writeObject(message);
         } catch (IOException ex) {
-           
+
         }
 
     }
-    
-    
-    
+
+    public void disconnect() {
+        try {
+            if (soket != null && !soket.isClosed()) {
+                soket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Listeden çıkar
+        synchronized (Server.Clients) {
+            Server.Clients.remove(this);
+        }
+
+        // Rakibi varsa onun da bağlantısını sıfırla
+        if (rakip != null) {
+            rakip.rakip = null;
+            rakip.paired = false;
+        }
+
+        rakip = null;
+        paired = false;
+    }
 
     //client dinleme threadi
     //her clientin ayrı bir dinleme thredi var
@@ -135,10 +156,6 @@ public class SClient {
                             //gelen metni direkt rakibe gönder
                             Server.Send(Client.rakip, received);
                             break;
-//                        case Selected:
-//                            //gelen seçim yapıldı mesajını rakibe gönder
-//                            Server.Send(Client.rakip, received);
-//                            break;
 
                         case Bitis:
                             System.out.println("Oyun bitiş mesajı geldi. Kazanan: " + received.sender);
@@ -353,19 +370,23 @@ public class SClient {
                 );
 
                 if (Client.rakip != null) {
+                    SClient rival = Client.rakip; // referansı kaybetmeden sakla
+
+                    // Rakibe bilgi ver
                     Message infoMsg = new Message(Message.Message_Type.Text2);
                     infoMsg.content = "Rakibiniz oyunu terk etti. Yeni rakip bekleniyor. \nRakip bağlandığında isim görülecek \nİsim gördüğünüzde gemileri dizebilirsiniz.";
-                    Server.Send(Client.rakip, infoMsg);
+                    Server.Send(rival, infoMsg);
 
                     Message clearRivalMsg = new Message(Message.Message_Type.RivalDisconnected);
-                    Server.Send(Client.rakip, clearRivalMsg);
+                    Server.Send(rival, clearRivalMsg);
 
-                    Client.rakip.rakip = null;
-                    Client.rakip = null;
-                    Client.rakip.paired = false;
+                    // Temizle
+                    rival.rakip = null;
+                    rival.paired = false;
 
-                    Client.rakip.pairThread = new PairingThread(Client.rakip);
-                    Client.rakip.pairThread.start();
+                    // Yeni eşleşme threadi başlat
+                    rival.pairThread = new PairingThread(rival);
+                    rival.pairThread.start();
                 }
 
                 Server.Display("Client gitti...");
@@ -383,66 +404,74 @@ public class SClient {
         PairingThread(SClient Client) {
             this.Client = Client;
         }
-        
-        
 
         public void run() {
-            //client bağlı ve eşleşmemiş olduğu durumda dön
-            while (!Client.soket.isClosed() && Client.paired == false) {
+            while (!Client.soket.isClosed() && !Client.paired) {
                 try {
-                    //lock mekanizması
-                    //sadece bir client içeri grebilir
-                    //diğerleri release olana kadar bekler
-                    Server.pairTwo.acquire(1);
+                    // Lock al (eşleşmeyi tek işlem haline getir)
+                    Server.pairTwo.acquire();
 
-                    //client eğer eşleşmemişse gir
-                    if (!Client.paired) {
+                    synchronized (Server.Clients) {
+                        Server.Clients.removeIf(c
+                                -> c == null
+                                || c.soket == null
+                                || c.soket.isClosed()
+                                || !c.soket.isConnected()
+                        );
+                    }
+
+                    if (!Client.paired && Client.soket != null && Client.soket.isConnected()) {
                         SClient crival = null;
-                        //eşleşme sağlanana kadar dön
-                        while (crival == null && Client.soket.isConnected()) {
-                            //liste içerisinde eş arıyor
-                            for (SClient client : Server.Clients) {
-                                if (Client != client
-                                        && client.rakip == null
-                                        && client.soket != null
-                                        && client.soket.isConnected()
-                                        && !client.soket.isClosed()) {
 
-                                    // eşleşme sağlandı
-                                    crival = client;
-                                    crival.paired = true;
-                                    crival.rakip = Client;
-                                    Client.rakip = crival;
-                                    Client.paired = true;
-                                    break;
+                        // Eşleşene kadar dene
+                        while (crival == null && Client.soket.isConnected() && !Client.soket.isClosed()) {
+                            synchronized (Server.Clients) {
+                                for (SClient client : Server.Clients) {
+                                    if (Client != client
+                                            && client.rakip == null
+                                            && client.soket != null
+                                            && client.soket.isConnected()
+                                            && !client.soket.isClosed()) {
+
+                                        // 🎯 Eşleşme bulundu
+                                        crival = client;
+                                        crival.paired = true;
+                                        crival.rakip = Client;
+                                        Client.rakip = crival;
+                                        Client.paired = true;
+                                        break;
+                                    }
                                 }
                             }
 
-                            //sürekli dönmesin 1 saniyede bir dönsün
-                            //thredi uyutuyoruz
-                            sleep(1000);
+                            // Eşleşme olmadıysa 1 saniye bekle
+                            if (crival == null) {
+                                sleep(1000);
+                            }
                         }
-                        //eşleşme oldu
-                        //her iki tarafada eşleşme mesajı gönder 
-                        //oyunu başlat
-                        Message msg1 = new Message(Message.Message_Type.RivalConnected);
-                        msg1.content = Client.name;
-                        Server.Send(Client.rakip, msg1);
 
-                        Message msg2 = new Message(Message.Message_Type.RivalConnected);
-                        msg2.content = Client.rakip.name;
-                        Server.Send(Client, msg2);
+                        // 🔁 Eşleşme sağlandıysa her iki tarafa mesaj gönder
+                        if (Client.paired && Client.rakip != null) {
+                            Message msg1 = new Message(Message.Message_Type.RivalConnected);
+                            msg1.content = Client.name;
+                            Server.Send(Client.rakip, msg1);
+
+                            Message msg2 = new Message(Message.Message_Type.RivalConnected);
+                            msg2.content = Client.rakip.name;
+                            Server.Send(Client, msg2);
+                        }
                     }
-                    //lock mekanizmasını servest bırak
-                    //bırakılmazsa deadlock olur.
-                    Server.pairTwo.release(1);
-                } catch (InterruptedException ex) {
-                    //Logger.getLogger(PairingThread.class.getName()).log(Level.SEVERE, null, ex);
+
+                    // Lock'u bırak (deadlock olmaması için şart)
+                    Server.pairTwo.release();
+                } catch (InterruptedException e) {
+                    Client.disconnect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Client.disconnect();
                 }
             }
         }
-        
-        
     }
 
 }

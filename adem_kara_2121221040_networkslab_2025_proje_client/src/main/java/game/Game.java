@@ -195,7 +195,12 @@ public class Game extends javax.swing.JFrame {
             txt_name.setEnabled(false);
 
             btn_send_message.setEnabled(true);
-            
+            GameBoard boardScreen = new GameBoard();
+                GameBoard.ThisGame = boardScreen;
+                boardScreen.setSize(1216, 766);
+                boardScreen.setVisible(true);
+                boardScreen.showGameBoards();
+                this.setVisible(false);
             this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -223,33 +228,33 @@ public class Game extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_connectActionPerformed
 
     private void btn_startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startActionPerformed
-        if (Client.socket != null && Client.socket.isConnected()) {
-            if (txt_rival_name.getText().equals("Rival")) {
-                // Henüz eşleşme yoksa
-                txt_receive.setText("Rakip bekleniyor...");
-
-                // Sunucuya pair durumunu sorgula (isteğe bağlı)
-                Message msg = new Message(Message.Message_Type.PairStatus);
-                msg.content = "Pair durumu sorgulama";
-                Client.Send(msg);
-            } else {
-                // Eşleşme varsa
-                txt_receive.setText("Eşleşme sağlandı! Oyun başlayabilir.");
-
-                // Oyun başlatma mesajını gönder (isteğe bağlı)
-                Message msg = new Message(Message.Message_Type.Start);
-                Client.Send(msg);
-                GameBoard boardScreen = new GameBoard();
-                GameBoard.ThisGame = boardScreen;
-                boardScreen.setSize(1216, 766);
-                boardScreen.setVisible(true);
-                boardScreen.showGameBoards();
-                this.setVisible(false); // Game ekranını gizle
-
-            }
-        } else {
-            txt_receive.setText("Önce sunucuya bağlanmalısınız!");
-        }
+//        if (Client.socket != null && Client.socket.isConnected()) {
+//            if (txt_rival_name.getText().equals("Rival")) {
+//                // Henüz eşleşme yoksa
+//                txt_receive.setText("Rakip bekleniyor...");
+//
+//                // Sunucuya pair durumunu sorgula (isteğe bağlı)
+//                Message msg = new Message(Message.Message_Type.PairStatus);
+//                msg.content = "Pair durumu sorgulama";
+//                Client.Send(msg);
+//            } else {
+//                // Eşleşme varsa
+//                txt_receive.setText("Eşleşme sağlandı! Oyun başlayabilir.");
+//
+//                // Oyun başlatma mesajını gönder (isteğe bağlı)
+//                Message msg = new Message(Message.Message_Type.Start);
+//                Client.Send(msg);
+//                GameBoard boardScreen = new GameBoard();
+//                GameBoard.ThisGame = boardScreen;
+//                boardScreen.setSize(1216, 766);
+//                boardScreen.setVisible(true);
+//                boardScreen.showGameBoards();
+//                this.setVisible(false); // Game ekranını gizle
+//
+//            }
+//        } else {
+//            txt_receive.setText("Önce sunucuya bağlanmalısınız!");
+//        }
         //btn_start.setEnabled(false);
 
     }//GEN-LAST:event_btn_startActionPerformed

@@ -23,12 +23,10 @@ class Listen extends Thread {
                 //mesaj gelmesini bloking olarak dinyelen komut
                 Message received = (Message) (sInput.readObject());
 
-
                 //mesaj gelirse bu satıra geçer
                 //mesaj tipine göre yapılacak işlemi ayır.
                 switch (received.type) {
                     case Name:
-
 
                         String uniqueName = received.content.toString();
 
@@ -40,7 +38,6 @@ class Listen extends Thread {
                     case RivalConnected:
                         String name = received.content.toString();
 
-
                         // Giriş ekranı üzerindeki rakip adı
                         if (Game.ThisGame != null) {
                             Game.ThisGame.txt_rival_name.setText(name);
@@ -49,16 +46,18 @@ class Listen extends Thread {
                         // Oyun ekranı üzerindeki rakip adı
                         if (GameBoard.ThisGame != null) {
                             GameBoard.ThisGame.txt_rival_name.setText(name + "'s board");
+                            GameBoard.ThisGame.txt_receive.setText("Rakip bağlandı gemilerinizi dizebilirsiniz.");
                         }
 
                         Game.ThisGame.btn_send_message.setEnabled(true);
-                        
+
                         break;
 
                     case RivalDisconnected:
 
                         GameBoard.ThisGame.txt_rival_name.setText("Rival");
-                        Game.ThisGame.txt_rival_name.setText("Rival");
+//                        Game.ThisGame.txt_rival_name.setText("Rival");
+//                        Game.ThisGame.txt_receive.setText("Rakibiniz oyundan ayrıldı.");
                         GameBoard.rivalIsReady = false;
                         GameBoard.enemyBoard.resetBoard();
                         GameBoard.playerBoard.resetBoard();
@@ -89,7 +88,6 @@ class Listen extends Thread {
 //                    case Selected:
 //                        System.out.println("[CLIENT] Selected message received: " + received.content);
 //                        break;
-
                     case AttackResult:
                         String[] result = received.content.toString().split(",");
                         int resultRow = Integer.parseInt(result[0]);
@@ -188,7 +186,6 @@ class Listen extends Thread {
                                 allowFire ? "Sıra sizde!" : "Rakip hamlesi bekleniyor..."
                         );
                         break;
-                        
 
                     default:
                         break;
@@ -249,7 +246,6 @@ public class Client {
         try {
             if (Client.socket != null && !Client.socket.isClosed()) {
 
-
                 // Önce Disconnect mesajını gönder
                 Message disconnectMsg = new Message(Message.Message_Type.Disconnect);
                 Client.Send(disconnectMsg); // 💡 önce mesaj
@@ -272,19 +268,19 @@ public class Client {
 
     //mesaj gönderme fonksiyonu
     public static void Send(Message msg) {
-    try {
-        if (socket == null || socket.isClosed()) {
-            return; 
-        }
+        try {
+            if (socket == null || socket.isClosed()) {
+                return;
+            }
 
-        if (msg.content != null) {
-        }
+            if (msg.content != null) {
+            }
 
-        sOutput.writeObject(msg);
-        sOutput.flush();
-    } catch (IOException ex) {
-        
+            sOutput.writeObject(msg);
+            sOutput.flush();
+        } catch (IOException ex) {
+
+        }
     }
-}
 
 }
