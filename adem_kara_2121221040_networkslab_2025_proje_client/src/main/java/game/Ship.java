@@ -7,7 +7,7 @@ public class Ship implements Serializable {
     private String name;
     private boolean pos[][];
     private int r, c;
-    private boolean vertical; // EKSİK OLAN BU ALAN
+    private boolean vertical; 
 
     public Ship(String n, int l) {
         this.name = n;
@@ -50,12 +50,12 @@ public class Ship implements Serializable {
         return pos[row][col];
     }
 
-    // YENİ METOD: Gemi dikey mi?
+    // YENİ METOD: Gemi dikey mi
     public boolean isVertical() {
         return vertical;
     }
 
-    // Diğer getter metodları aynı kalacak...
+
     public int getHealth() { return health; }
     public int getLength() { return length; }
     public String getName() { return name; }

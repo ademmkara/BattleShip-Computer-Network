@@ -137,7 +137,7 @@ public class SClient {
 
                         case Disconnect:
                             
-    try {
+                         try {
                             Client.sInput.close();
                             Client.sOutput.close();
                             Client.soket.close();
@@ -207,7 +207,7 @@ public class SClient {
                             break;
 
                         case SHIP_INFO:
-                            System.out.println("Gemi bilgileri alındı: " + received.content);
+                            //System.out.println("Gemi bilgileri alındı: " + received.content);
                             String[] shipData = received.content.toString().split(";");
                             Client.ships = new ArrayList<>();
 
@@ -253,7 +253,7 @@ public class SClient {
                             break;
 
                         case Attack:
-                            System.out.println("Attack mesajı alındı: " + received.content);
+                            //System.out.println("Attack mesajı alındı: " + received.content);
                             String[] coordss = received.content.toString().split(",");
                             int row = Integer.parseInt(coordss[0]);
                             int col = Integer.parseInt(coordss[1]);
@@ -271,7 +271,7 @@ public class SClient {
                             // Rakibin HP'sini güncelle
                             if (isHitt) {
                                 Client.rakip.hp--;
-                                System.out.println("Rakibin HP: " + Client.rakip.hp);
+                                //System.out.println("Rakibin HP: " + Client.rakip.hp);
 
                                 if (Client.rakip.hp == 0) {
                                     System.out.println(">>> Rakibin tüm gemileri vuruldu, oyun bitiyor!");
@@ -306,7 +306,7 @@ public class SClient {
                             newTurnForDefender.content = "true";
                             Server.Send(Client.rakip, newTurnForDefender);
 
-                            System.out.println("Sıra değiştirildi → " + Client.rakip.name + " şimdi oynayabilir.");
+                            //System.out.println("Sıra değiştirildi → " + Client.rakip.name + " şimdi oynayabilir.");
                             break;
 
                         case RestartRequest:
@@ -396,7 +396,7 @@ public class SClient {
     }
 
     //eşleştirme threadi
-    //her clientin ayrı bir eşleştirme thredi var
+
     class PairingThread extends Thread {
 
         SClient Client;
@@ -433,7 +433,7 @@ public class SClient {
                                             && client.soket.isConnected()
                                             && !client.soket.isClosed()) {
 
-                                        // 🎯 Eşleşme bulundu
+                                        //Eşleşme bulundu
                                         crival = client;
                                         crival.paired = true;
                                         crival.rakip = Client;
@@ -450,7 +450,7 @@ public class SClient {
                             }
                         }
 
-                        // 🔁 Eşleşme sağlandıysa her iki tarafa mesaj gönder
+                        //Eşleşme sağlandıysa her iki tarafa mesaj gönder
                         if (Client.paired && Client.rakip != null) {
                             Message msg1 = new Message(Message.Message_Type.RivalConnected);
                             msg1.content = Client.name;

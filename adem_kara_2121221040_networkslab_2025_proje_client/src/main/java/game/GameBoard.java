@@ -33,11 +33,10 @@ public class GameBoard extends javax.swing.JFrame {
     public GameBoard() {
         initComponents();
         ThisGame = this;
-        //setSize(1216, 766); // Açılış boyutunu tam olarak belirle
-        setResizable(false); // pencere yeniden boyutlandırılamaz
-        setLocationRelativeTo(null); // ekranın ortasında açılır
+        setResizable(false);
+        setLocationRelativeTo(null); 
         btnFire.setEnabled(false);
-
+        btnReady.setEnabled(false);
         btnRestart.setVisible(false);
 
     }
@@ -142,7 +141,7 @@ public class GameBoard extends javax.swing.JFrame {
 
         pnl_Board.setBackground(new java.awt.Color(0, 0, 0));
 
-        btnReady.setBackground(new java.awt.Color(0, 204, 204));
+        btnReady.setBackground(new java.awt.Color(255, 255, 0));
         btnReady.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
         btnReady.setText("Ready");
         btnReady.addActionListener(new java.awt.event.ActionListener() {
@@ -194,7 +193,7 @@ public class GameBoard extends javax.swing.JFrame {
             }
         });
 
-        btnHorizantal.setBackground(new java.awt.Color(255, 204, 0));
+        btnHorizantal.setBackground(new java.awt.Color(51, 204, 0));
         btnHorizantal.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
         btnHorizantal.setText("Horizantal");
         btnHorizantal.addActionListener(new java.awt.event.ActionListener() {
@@ -203,7 +202,7 @@ public class GameBoard extends javax.swing.JFrame {
             }
         });
 
-        btnVertical.setBackground(new java.awt.Color(51, 153, 0));
+        btnVertical.setBackground(new java.awt.Color(51, 204, 0));
         btnVertical.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
         btnVertical.setText("Vertical");
         btnVertical.addActionListener(new java.awt.event.ActionListener() {
@@ -363,7 +362,6 @@ public class GameBoard extends javax.swing.JFrame {
         int col = GameBoard.enemyBoard.getCclick();
 
         if (row < 0 || col < 0) {
-            //Game.ThisGame.txt_receive.setText("Lütfen bir hücre seçin!");
             return;
         }
 
@@ -372,7 +370,7 @@ public class GameBoard extends javax.swing.JFrame {
         Client.Send(attackMsg);
 
         btnFire.setEnabled(false);  // Sırayı rakibe ver
-        //Game.ThisGame.txt_receive.setText("Saldırı gönderildi: " + (char) (row + 'A') + (col + 1));
+
         
     }//GEN-LAST:event_btnFireActionPerformed
 

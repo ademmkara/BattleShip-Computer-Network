@@ -23,8 +23,7 @@ class Listen extends Thread {
                 //mesaj gelmesini bloking olarak dinyelen komut
                 Message received = (Message) (sInput.readObject());
 
-                //mesaj gelirse bu satıra geçer
-                //mesaj tipine göre yapılacak işlemi ayır.
+              
                 switch (received.type) {
                     case Name:
 
@@ -46,48 +45,36 @@ class Listen extends Thread {
                         // Oyun ekranı üzerindeki rakip adı
                         if (GameBoard.ThisGame != null) {
                             GameBoard.ThisGame.txt_rival_name.setText(name + "'s board");
-                            GameBoard.ThisGame.txt_receive.setText("Rakip bağlandı gemilerinizi dizebilirsiniz.");
+                            GameBoard.ThisGame.txt_receive.setText("Rakip bağlandı gemilerinizi dizebilirsiniz.\nRakip hazır olduğunda saldırabiliceksiniz.");
+                            GameBoard.ThisGame.btnReady.setEnabled(true);
                         }
 
-                        Game.ThisGame.btn_send_message.setEnabled(true);
 
                         break;
 
                     case RivalDisconnected:
 
                         GameBoard.ThisGame.txt_rival_name.setText("Rival");
-//                        Game.ThisGame.txt_rival_name.setText("Rival");
-//                        Game.ThisGame.txt_receive.setText("Rakibiniz oyundan ayrıldı.");
                         GameBoard.rivalIsReady = false;
                         GameBoard.enemyBoard.resetBoard();
                         GameBoard.playerBoard.resetBoard();
                         GameBoard.iAmReady = false;
-                        GameBoard.rivalIsReady = false;
                         GameBoard.ThisGame.btnFire.setVisible(true);
                         GameBoard.ThisGame.btnFire.setEnabled(false);
                         GameBoard.ThisGame.btnReady.setEnabled(true);
                         GameBoard.ThisGame.btnRestart.setVisible(false);
                         GameBoard.ThisGame.btnHorizantal.setEnabled(true);
                         GameBoard.ThisGame.btnVertical.setEnabled(true);
-                        //GameBoard.ThisGame.txt_receive.setText(received.content.toString());
                         break;
 
                     case Disconnect:
 
                         break;
 
-                    case Text:
-
-                        Game.ThisGame.txt_receive.setText(received.content.toString());
-                        break;
-
                     case Text2:
                         GameBoard.ThisGame.txt_receive.setText(received.content.toString());
                         break;
 
-//                    case Selected:
-//                        System.out.println("[CLIENT] Selected message received: " + received.content);
-//                        break;
                     case AttackResult:
                         String[] result = received.content.toString().split(",");
                         int resultRow = Integer.parseInt(result[0]);
@@ -119,7 +106,7 @@ class Listen extends Thread {
                             }
                         });
 
-                        // 🔥 Artık burada btnFire kontrolü YOK!
+                        //Artık burada btnFire kontrolü YOK!
                         break;
 
                     case Attack:
@@ -162,11 +149,11 @@ class Listen extends Thread {
                         }
                         break;
 
-                    case SHIP_INFO:
-                        break;
-
-                    case PairStatus:
-                        break;
+//                    case SHIP_INFO:
+//                        break;
+//
+//                    case PairStatus:
+//                        break;
 
                     case Start:
                         SwingUtilities.invokeLater(() -> {
@@ -209,12 +196,12 @@ class Listen extends Thread {
 
 public class Client {
 
-    //her clientın bir soketi olmalı
+
     public static Socket socket;
 
-    //verileri almak için gerekli nesne
+
     public static ObjectInputStream sInput;
-    //verileri göndermek için gerekli nesne
+
     public static ObjectOutputStream sOutput;
     //serverı dinleme thredi 
     public static Listen listenMe;
@@ -241,7 +228,7 @@ public class Client {
         }
     }
 
-    //client durdurma fonksiyonu
+    //her client durdurma fonksiyonu
     public static void Stop() {
         try {
             if (Client.socket != null && !Client.socket.isClosed()) {
@@ -266,7 +253,7 @@ public class Client {
 
     }
 
-    //mesaj gönderme fonksiyonu
+    //client mesaj gönderme fonksiyonu
     public static void Send(Message msg) {
         try {
             if (socket == null || socket.isClosed()) {

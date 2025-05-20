@@ -48,13 +48,7 @@ public class Game extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         txt_name = new javax.swing.JTextField();
         btn_connect = new javax.swing.JButton();
-        btn_start = new javax.swing.JButton();
         txt_rival_name = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txt_send = new javax.swing.JTextArea();
-        btn_send_message = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txt_receive = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -62,6 +56,7 @@ public class Game extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
         jPanel1.setMaximumSize(new java.awt.Dimension(561, 379));
         jPanel1.setMinimumSize(new java.awt.Dimension(561, 379));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         txt_name.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         txt_name.addActionListener(new java.awt.event.ActionListener() {
@@ -69,6 +64,7 @@ public class Game extends javax.swing.JFrame {
                 txt_nameActionPerformed(evt);
             }
         });
+        jPanel1.add(txt_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 110, 140, 30));
 
         btn_connect.setBackground(new java.awt.Color(0, 204, 102));
         btn_connect.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -78,104 +74,33 @@ public class Game extends javax.swing.JFrame {
                 btn_connectActionPerformed(evt);
             }
         });
-
-        btn_start.setBackground(new java.awt.Color(0, 204, 204));
-        btn_start.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btn_start.setText("Start");
-        btn_start.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_startActionPerformed(evt);
-            }
-        });
+        jPanel1.add(btn_connect, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 160, 156, 39));
 
         txt_rival_name.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         txt_rival_name.setText("Rival");
         txt_rival_name.setEnabled(false);
+        jPanel1.add(txt_rival_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 40, 81, 39));
 
-        txt_send.setColumns(20);
-        txt_send.setRows(5);
-        jScrollPane1.setViewportView(txt_send);
-
-        btn_send_message.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btn_send_message.setText("Send");
-        btn_send_message.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_send_messageActionPerformed(evt);
-            }
-        });
-
-        txt_receive.setColumns(20);
-        txt_receive.setRows(5);
-        jScrollPane2.setViewportView(txt_receive);
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Name");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btn_send_message)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(36, 36, 36)
-                        .addComponent(btn_connect, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(44, 44, 44)
-                        .addComponent(btn_start, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(43, 43, 43))))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_connect, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_start, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 177, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btn_send_message)
-                        .addGap(31, 31, 31))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane2)
-                        .addContainerGap())))
-        );
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 60, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 429, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -194,7 +119,7 @@ public class Game extends javax.swing.JFrame {
             btn_connect.setEnabled(false);
             txt_name.setEnabled(false);
 
-            btn_send_message.setEnabled(true);
+            //btn_send_message.setEnabled(true);
             GameBoard boardScreen = new GameBoard();
                 GameBoard.ThisGame = boardScreen;
                 boardScreen.setSize(1216, 766);
@@ -226,47 +151,6 @@ public class Game extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_btn_connectActionPerformed
-
-    private void btn_startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startActionPerformed
-//        if (Client.socket != null && Client.socket.isConnected()) {
-//            if (txt_rival_name.getText().equals("Rival")) {
-//                // Henüz eşleşme yoksa
-//                txt_receive.setText("Rakip bekleniyor...");
-//
-//                // Sunucuya pair durumunu sorgula (isteğe bağlı)
-//                Message msg = new Message(Message.Message_Type.PairStatus);
-//                msg.content = "Pair durumu sorgulama";
-//                Client.Send(msg);
-//            } else {
-//                // Eşleşme varsa
-//                txt_receive.setText("Eşleşme sağlandı! Oyun başlayabilir.");
-//
-//                // Oyun başlatma mesajını gönder (isteğe bağlı)
-//                Message msg = new Message(Message.Message_Type.Start);
-//                Client.Send(msg);
-//                GameBoard boardScreen = new GameBoard();
-//                GameBoard.ThisGame = boardScreen;
-//                boardScreen.setSize(1216, 766);
-//                boardScreen.setVisible(true);
-//                boardScreen.showGameBoards();
-//                this.setVisible(false); // Game ekranını gizle
-//
-//            }
-//        } else {
-//            txt_receive.setText("Önce sunucuya bağlanmalısınız!");
-//        }
-        //btn_start.setEnabled(false);
-
-    }//GEN-LAST:event_btn_startActionPerformed
-
-    private void btn_send_messageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_send_messageActionPerformed
-        //metin mesajı gönder
-        Message msg = new Message(Message.Message_Type.Text);
-        String x = txt_send.getText();
-        msg.content = txt_send.getText();
-        Client.Send(msg);
-        txt_send.setText("");
-    }//GEN-LAST:event_btn_send_messageActionPerformed
 
     private void txt_nameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_nameActionPerformed
         // TODO add your handling code here:
@@ -309,15 +193,9 @@ public class Game extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_connect;
-    public javax.swing.JButton btn_send_message;
-    public javax.swing.JButton btn_start;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     public javax.swing.JTextField txt_name;
-    public javax.swing.JTextArea txt_receive;
     public javax.swing.JTextField txt_rival_name;
-    public javax.swing.JTextArea txt_send;
     // End of variables declaration//GEN-END:variables
 }

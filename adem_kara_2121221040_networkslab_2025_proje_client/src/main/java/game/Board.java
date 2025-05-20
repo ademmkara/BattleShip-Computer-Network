@@ -16,8 +16,6 @@ import javax.swing.border.LineBorder;
 
 public class Board extends JPanel implements ActionListener {
 
-    // private instance data
-    // put the protected in readme
     public JButton btnGrid[][];
     private int rClick, cClick;
     private Border dborder, cborder;
@@ -25,22 +23,20 @@ public class Board extends JPanel implements ActionListener {
 
 
     public Board() {
-        // TODO Auto-generated constructor stub
+
         super();
 
-        //this.boolGrid = new boolean[10][10];
+
         this.btnGrid = new JButton[10][10];
         rClick = 0;
         cClick = 0;
-        //this.w = 20;
         dborder = new LineBorder(Color.GREEN, 1);
         cborder = new LineBorder(Color.GREEN, 4);
         markers = new JLabel[21];
 
         for (int i = 0; i < btnGrid.length; i++) {
             for (int j = 0; j < btnGrid.length; j++) {
-                //boolGrid[i][j] = false;
-                //grid[i][j] = new Picture(0 + j*w, 0 + i*w, w, w);
+
                 btnGrid[i][j] = new JButton();
                 btnGrid[i][j].addActionListener(this);
                 btnGrid[i][j].setText("");
@@ -57,9 +53,6 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
-    //Sets the property of the JPanel, and adds the grid of JButtons along with
-    //the row and column markers. The JPanel is an 11x11, the outer west and north lines 
-    //are used for the column and row markers, while the inner 10x10 is used for the JButtons
     public void drawBoard() {
 
         setSize(400, 400);
@@ -93,8 +86,6 @@ public class Board extends JPanel implements ActionListener {
     
     
 
-    //Changes the color of a specified button to red, to represent that the cell was shot on by
-    //the player and struck a ship. Also disables the button to prevent re-clicking
     public void placeHitMarker(int row, int col) {
         btnGrid[row][col].setBackground(Color.YELLOW);
         btnGrid[row][col].setForeground(Color.BLACK);
@@ -114,37 +105,41 @@ public class Board extends JPanel implements ActionListener {
         btnGrid[row][col].setEnabled(false);
     }
     public void resetBoard() {
-        
+
+    if (dborder == null) {
+        dborder = new LineBorder(Color.GREEN, 1);
+    }
 
     for (int i = 0; i < btnGrid.length; i++) {
         for (int j = 0; j < btnGrid[i].length; j++) {
             btnGrid[i][j].setBackground(Color.BLACK);
             btnGrid[i][j].setText("");
             btnGrid[i][j].setEnabled(true);
-            btnGrid[i][j].setBorder(dborder); // kenarlık sıfırlansın
+            btnGrid[i][j].setOpaque(true);
+
+          
+            btnGrid[i][j].setBorder(dborder);
         }
     }
 
-    // Seçilen hücre bilgilerini sıfırla
     rClick = -1;
     cClick = -1;
+    
 }
+
 
     
 
-    //Returns an integer representing the row of the button last clicked
     public int getRclick() {
         return rClick;
     }
 
-    //Returns an integer representing the column of the button last clicked
+
     public int getCclick() {
         return cClick;
     }
 
-    //When a button is clicked on an instance of Board, the action listener is activated
-    //and finds which button in the grid was pressed. Then, it sets the rClick and cClick
-    //to the corresponding row and column so it can be retrieved using their getters.
+
     @Override
     public void actionPerformed(ActionEvent e) {
         // TODO Auto-generated method stub
@@ -161,32 +156,11 @@ public class Board extends JPanel implements ActionListener {
                     rClick = row;
                     cClick = col;
                     btnGrid[row][col].setBorder(cborder);
-//                    Message attackMsg = new Message(Message.Message_Type.Attack);
-//                    attackMsg.content = row + "," + col; // Örnek: "3,5"
-//                    Client.Send(attackMsg);
+
                 }
             }
         }
     }
-
-    /**
-     * Self testing main method
-     */
-//    public static void main(String[] args) {
-//        // TODO Auto-generated method stub
-//        Board b = new Board();
-//        b.drawBoard();
-//
-//        b.placeHitMarker(0, 0);
-//        b.placeMissMarker(0, 1);
-//
-//        JFrame f1 = new JFrame();
-//        f1.setSize(500, 500);
-//        f1.setLayout(null);
-//        f1.add(b);
-//        f1.setVisible(true);
-//
-//    }
 
 }
 

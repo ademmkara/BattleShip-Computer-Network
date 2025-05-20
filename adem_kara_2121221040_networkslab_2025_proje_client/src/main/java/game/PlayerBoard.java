@@ -35,51 +35,46 @@ public class PlayerBoard extends Board implements ActionListener {
         this.shipsPlaced = false;
     }
 
-    //Places a ship at a specified row and column. The cell represents either the
-    //topmost or leftmost cell of the ship (depending on if it is vertical or horizontal).
-    //Also before placing the ship, the method ensures the ship does not go off the board
-    //or overlap with another ship.
+
     public void placeShip(int row, int col) {
 
         boolean fits = true;
-        // cycles through the JButtons that the placed ship will occupy. If one of the JButtons
-        // text is " " (one space) instead of "" (nothing), then the JButton/cell is occupied by another ship.
+
         try {
             for (int i = 0; i < ship[index].getLength(); i++) {
-                if (isVertical) {	// if the ship is being placed vertically
+                if (isVertical) {	
                     if (btnGrid[row + i][col].getText().equals(" ")) {
-                        fits = false;		// fits is false if one of the cells is occupied
-                        break;				// breaks from loop
+                        fits = false;		
+                        break;				
                     }
-                } else {				// if the ship is being placed horizontally
+                } else {				
                     if (btnGrid[row][col + i].getText().equals(" ")) {
-                        fits = false;		// fits it false if one of the cells if occupied
-                        break;				// breaks from loop
+                        fits = false;		
+                        break;				
                     }
                 }
             }
-        } // if the ship goes off the board, an ArrayIndexOutOfBoundsException will be triggered,
-        // this means the ship does not fit and fits will be false
-        catch (ArrayIndexOutOfBoundsException e) {	// work smarter
-            fits = false;							// not harder
-        }// end of checking if the ship fits
+        } 
 
-        // placing the ship if it fits (fits == true)
+        catch (ArrayIndexOutOfBoundsException e) {	
+            fits = false;							
+        }
+
+     
         if (fits) {
-            // the ship object is told the position
+
             ship[index].setPos(row, col, isVertical);
 
-            if (isVertical) {		// if being placed vertically
+            if (isVertical) {	
                 for (int i = 0; i < ship[index].getLength(); i++) {
                     btnGrid[row + i][col].setBackground(Color.GREEN);
                     btnGrid[row + i][col].setOpaque(true);
                     btnGrid[row + i][col].setBorderPainted(false);
                     btnGrid[row + i][col].setText(" ");
                     btnGrid[row + i][col].setForeground(Color.GREEN);
-                    // ^ the text in the button is set to " " to represent being occupied
-                    // and the buttons are colored blue
+
                 }
-            } else {					// if being placed horizontally
+            } else {					
                 for (int i = 0; i < ship[index].getLength(); i++) {
                     btnGrid[row][col + i].setBackground(Color.GREEN);
                     btnGrid[row][col + i].setOpaque(true);
@@ -88,19 +83,19 @@ public class PlayerBoard extends Board implements ActionListener {
                     btnGrid[row][col + i].setForeground(Color.GREEN);
                 }
             }
-            // to cycle through all the ships
+
             index++;
 
-            if (index == ship.length) {		// when all the ships are placed disable the grid
-                // System.out.println("click: " + (char)(row+65) + "" + (col + 1));
+            if (index == ship.length) {
+
                 this.shipsPlaced = true;
-                // Sunucuya gemilerin konumlarını gönder
+
                 Message shipInfoMsg = new Message(Message.Message_Type.SHIP_INFO);
                 shipInfoMsg.content = getShipPositions(); // Gemilerin konumlarını döndüren metot
                 Client.Send(shipInfoMsg);
                 for (int i = 0; i < btnGrid.length; i++) {
                     for (int j = 0; j < btnGrid.length; j++) {
-//						btnGrid[i][j].setEnabled(false);
+
                         btnGrid[i][j].setText("");
 
                     }
@@ -126,7 +121,7 @@ public void resetBoard() {
     ship[3] = new Ship("Submarine", 3);
     ship[4] = new Ship("Destroyer", 2);
 
-    this.hp = 17; // ya da 17 gibi toplam hücre sayısı
+    this.hp = 1; // ya da 17 gibi toplam hücre sayısı
     this.index = 0;
     this.isVertical = false;
     this.shipsPlaced = false;
@@ -137,6 +132,7 @@ public void resetBoard() {
             btnGrid[i][j].addActionListener(this);
         }
     }
+    
 }
 
 
@@ -176,9 +172,7 @@ public void resetBoard() {
 }
 
 
-    //Checks if the hp of the PlayerBoard is 0. The hp is an int that represents the sum of
-    //the health (num of cells) of all the ships. When it reaches 0, every cell of every
-    //ship has been hit. Returns true if hp is 0, false if not.
+
     public boolean hasLost() {
         if (hp == 0) {
             return true;
@@ -187,8 +181,6 @@ public void resetBoard() {
         }
     }
 
-    //Sets the isVertical variable to true or false, so when the next ship is placed,
-    //it is placed in the correct orientation.
     public void setIsVertical(boolean in) {
         this.isVertical = in;
     }
@@ -206,9 +198,6 @@ public void resetBoard() {
         hp = in;
     }
 
-    //Overrides the actionPerformed method from the superclass Board. (EXAMPLE OF DYNAMIC 
-    //POLYMORPHISM). Instead of setting rClick and cClick corresponding to button pressed,
-    //instead this actionPerformed places a Ship at the clicked button.
     public void actionPerformed(ActionEvent e) {
         for (int row = 0; row < btnGrid.length; row++) {
             for (int col = 0; col < btnGrid.length; col++) {
@@ -218,20 +207,6 @@ public void resetBoard() {
             }
         }
     }
-//
-//    public static void main(String[] args) {
-//        // TODO Auto-generated method stub
-//
-//        PlayerBoard b = new PlayerBoard();
-//        b.drawBoard();
-//
-//        //b.setIsVertical(true);
-//        JFrame f1 = new JFrame();
-//        f1.setSize(500, 500);
-//        f1.setLayout(null);
-//        f1.add(b);
-//        f1.setVisible(true);
-//
-//    }
+
 
 }
