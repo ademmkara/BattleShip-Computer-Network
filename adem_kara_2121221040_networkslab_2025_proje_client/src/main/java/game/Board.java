@@ -119,11 +119,18 @@ public class Board extends JPanel implements ActionListener {
 
           
             btnGrid[i][j].setBorder(dborder);
+            btnGrid[i][j].invalidate();
+            btnGrid[i][j].revalidate();
+            btnGrid[i][j].repaint();
         }
+        
     }
 
     rClick = -1;
     cClick = -1;
+    this.invalidate();
+    this.revalidate();
+    this.repaint();
     
 }
 
@@ -152,7 +159,7 @@ public class Board extends JPanel implements ActionListener {
         for (int row = 0; row < btnGrid.length; row++) {
             for (int col = 0; col < btnGrid.length; col++) {
                 if (btnGrid[row][col] == e.getSource()) {
-                    System.out.println("click: " + (char) (row + 65) + "" + (col + 1));
+                    //System.out.println("click: " + (char) (row + 65) + "" + (col + 1));
                     rClick = row;
                     cClick = col;
                     btnGrid[row][col].setBorder(cborder);

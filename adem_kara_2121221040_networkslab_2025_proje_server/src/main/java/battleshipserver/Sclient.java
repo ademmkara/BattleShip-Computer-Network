@@ -13,6 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SClient {
+    
+    
 
     int id;
     public String name = "isimYok";
@@ -38,8 +40,8 @@ public class SClient {
     public SClient(Socket gelenSoket, int id) {
         this.soket = gelenSoket;
         this.id = id;
-        this.name = "NoName";
-        this.displayName = "NoName";
+        this.name = "isimYok";
+        this.displayName = "isimYok";
         this.paired = false;
         this.rakip = null;
         this.hp = 17;
@@ -49,7 +51,6 @@ public class SClient {
             this.sOutput = new ObjectOutputStream(this.soket.getOutputStream());
             this.sInput = new ObjectInputStream(this.soket.getInputStream());
         } catch (IOException ex) {
-//            Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
         }
         //thread nesneleri
         this.listenThread = new Listen(this);
@@ -142,7 +143,6 @@ public class SClient {
                             Client.sOutput.close();
                             Client.soket.close();
                         } catch (IOException e) {
-//                            e.printStackTrace();
                         }
 
                         Server.Clients.remove(Client);
@@ -171,25 +171,17 @@ public class SClient {
                             Server.Send(Client, notifyWinner);
                             break;
                         case PairStatus:
-                            // Eşleşme durumunu kontrol et
-                            Message reply = new Message(Message.Message_Type.Text);
-                            if (Client.paired) {
-                                reply.content = "Eşleşme sağlandı! Rakip: " + Client.rakip.name + " start'a basabilirsiniz...";
-                            } else {
-                                reply.content = "Hala rakip bekleniyor. Rakip ismi gördüğünüzde start'a basabilirsiniz...";
-                            }
-                            Server.Send(Client, reply);
+
                             break;
 
                         case Ready:
-                            System.out.println("[SERVER] Ready message received");
 
                             Client.isReady = true;
 
                             // Rakibe de haber ver
                             Server.Send(Client.rakip, received);
 
-                            // Eğer her iki oyuncu da hazırsa → sırayı belirle
+                            // Eğer her iki oyuncu da hazırsa sırayı belirle
                             if (Client.rakip != null && Client.rakip.isReady) {
 
                                 // Rastgele bir oyuncuya ilk hamle hakkı ver
@@ -207,7 +199,6 @@ public class SClient {
                             break;
 
                         case SHIP_INFO:
-                            //System.out.println("Gemi bilgileri alındı: " + received.content);
                             String[] shipData = received.content.toString().split(";");
                             Client.ships = new ArrayList<>();
 
@@ -226,9 +217,7 @@ public class SClient {
                                 ship.setPos(row, col, isVertical);
                                 Client.ships.add(ship);
 
-                                System.out.println("Gemi oluşturuldu: " + row + "," + col
-                                        + " Uzunluk:" + length
-                                        + " Dikey:" + isVertical);
+
                             }
                             break;
 
@@ -253,7 +242,6 @@ public class SClient {
                             break;
 
                         case Attack:
-                            //System.out.println("Attack mesajı alındı: " + received.content);
                             String[] coordss = received.content.toString().split(",");
                             int row = Integer.parseInt(coordss[0]);
                             int col = Integer.parseInt(coordss[1]);
@@ -274,7 +262,6 @@ public class SClient {
                                 //System.out.println("Rakibin HP: " + Client.rakip.hp);
 
                                 if (Client.rakip.hp == 0) {
-                                    System.out.println(">>> Rakibin tüm gemileri vuruldu, oyun bitiyor!");
 
                                     Message winnerMsg = new Message(Message.Message_Type.Bitis);
                                     winnerMsg.content = "Tebrikler! Kazandınız." + Client.name;
@@ -306,7 +293,7 @@ public class SClient {
                             newTurnForDefender.content = "true";
                             Server.Send(Client.rakip, newTurnForDefender);
 
-                            //System.out.println("Sıra değiştirildi → " + Client.rakip.name + " şimdi oynayabilir.");
+                            //System.out.println("Sıra değiştirildi  " + Client.rakip.name + " şimdi oynayabilir.");
                             break;
 
                         case RestartRequest:
@@ -345,12 +332,12 @@ public class SClient {
 
                 }
             } catch (IOException ex) {
-                //Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+
                 //client bağlantısı koparsa listeden sil
                 Server.Clients.remove(Client);
 
             } catch (ClassNotFoundException ex) {
-                //Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+               
                 //client bağlantısı koparsa listeden sil
                 Server.Clients.remove(Client);
             } finally {
@@ -359,7 +346,7 @@ public class SClient {
                     Client.sOutput.close();
                     Client.soket.close();
                 } catch (IOException ex) {
-                    //Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
+
                 }
 
                 //Listeden kesin silme: aynı referans veya aynı isimde olan

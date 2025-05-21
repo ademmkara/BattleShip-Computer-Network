@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package battleshipserver;
 
 import game.Message;
@@ -18,11 +14,8 @@ import java.util.logging.Logger;
 //scp -i "C:\Users\cvsbilisim\Desktop\battleship-servers.pem" "C:\Users\cvsbilisim\.m2\repository\com\mycompany\adem_kara_2121221040_networkslab_2025_proje_server\1.0-SNAPSHOT\adem_kara_2121221040_networkslab_2025_proje_server-1.0-SNAPSHOT.jar" ubuntu@13.60.186.154:/home/ubuntu
 //ssh -i "C:\Users\cvsbilisim\Desktop\battleship-servers.pem" ubuntu@13.60.186.154
 //java -jar
-/**
- *
- * @author
- */
-//client gelişini dinleme threadi
+
+
 class ServerThread extends Thread {
 
     public void run() {
@@ -31,13 +24,11 @@ class ServerThread extends Thread {
         while (!Server.serverSocket.isClosed()) {
             try {
                 Server.Display("Client Bekleniyor...");
-                // clienti bekleyen satır
                 //bir client gelene kadar bekler
                 Socket clientSocket = Server.serverSocket.accept();
                 //client gelirse bu satıra geçer
-                Server.Display("Client Geldi...");
-                //gelen client soketinden bir sclient nesnesi oluştur
-                //bir adet id de kendimiz verdik
+                Server.Display("Client Baglandi...");
+                //her client a bir adet id 
                 SClient nclient = new SClient(clientSocket, Server.IdClient);
 
                 Server.IdClient++;
@@ -101,33 +92,5 @@ public class Server {
 
     }
 
-    public static void cleanupClient(SClient client) {
-        try {
-            if (client.soket != null && !client.soket.isClosed()) {
-                client.soket.close();
-            }
-            Clients.remove(client);
-            System.out.println("Client temizlendi: " + client.name);
-        } catch (IOException e) {
-            System.err.println("Client temizleme hatası: " + e.getMessage());
-        }
-    }
-
-    public static synchronized void removeClient(SClient client) {
-        try {
-            if (!Clients.contains(client)) {
-                return;
-            }
-
-            Clients.remove(client);
-            System.out.println("Client kaldırıldı: " + client.name);
-
-            if (client.soket != null && !client.soket.isClosed()) {
-                client.soket.close();
-            }
-        } catch (IOException e) {
-            System.err.println("Client kaldırma hatası: " + e.getMessage());
-        }
-    }
 
 }

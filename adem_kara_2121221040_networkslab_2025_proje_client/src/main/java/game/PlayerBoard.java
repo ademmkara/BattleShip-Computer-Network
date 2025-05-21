@@ -121,7 +121,7 @@ public void resetBoard() {
     ship[3] = new Ship("Submarine", 3);
     ship[4] = new Ship("Destroyer", 2);
 
-    this.hp = 1; // ya da 17 gibi toplam hücre sayısı
+    this.hp = 17; // gemi sayısı
     this.index = 0;
     this.isVertical = false;
     this.shipsPlaced = false;

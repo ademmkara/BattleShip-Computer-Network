@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package game;
 
 import battleshipclient.Client;
@@ -29,6 +26,7 @@ public class GameBoard extends javax.swing.JFrame {
     public static boolean iAmReady = false;
     public static boolean rivalIsReady = false;
     public static boolean myTurn = false;
+    
 
     public GameBoard() {
         initComponents();
@@ -68,7 +66,6 @@ public class GameBoard extends javax.swing.JFrame {
             txt_name.setText("Your Board");
         }
 
-        // Oyunu kapatırken bağlantıyı sonlandır
         // Oyunu kapatırken onay al, sonra bağlantıyı sonlandır
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -280,11 +277,11 @@ public class GameBoard extends javax.swing.JFrame {
                     .addGroup(pnl_BoardLayout.createSequentialGroup()
                         .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(pnl_BoardLayout.createSequentialGroup()
-                                .addGap(111, 111, 111)
-                                .addComponent(btnFire, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(pnl_BoardLayout.createSequentialGroup()
                                 .addGap(102, 102, 102)
-                                .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txt_rival_name, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(pnl_BoardLayout.createSequentialGroup()
+                                .addGap(111, 111, 111)
+                                .addComponent(btnFire, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 266, Short.MAX_VALUE)
                         .addGroup(pnl_BoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_BoardLayout.createSequentialGroup()
@@ -411,6 +408,7 @@ public class GameBoard extends javax.swing.JFrame {
         playerBoard.setIsVertical(true);
     }//GEN-LAST:event_btnVerticalActionPerformed
 
+    
     /**
      * @param args the command line arguments
      */

@@ -23,7 +23,6 @@ class Listen extends Thread {
                 //mesaj gelmesini bloking olarak dinyelen komut
                 Message received = (Message) (sInput.readObject());
 
-              
                 switch (received.type) {
                     case Name:
 
@@ -47,8 +46,9 @@ class Listen extends Thread {
                             GameBoard.ThisGame.txt_rival_name.setText(name + "'s board");
                             GameBoard.ThisGame.txt_receive.setText("Rakip bağlandı gemilerinizi dizebilirsiniz.\nRakip hazır olduğunda saldırabiliceksiniz.");
                             GameBoard.ThisGame.btnReady.setEnabled(true);
+                            GameBoard.ThisGame.btnHorizantal.setEnabled(true);
+                            GameBoard.ThisGame.btnVertical.setEnabled(true);
                         }
-
 
                         break;
 
@@ -61,10 +61,10 @@ class Listen extends Thread {
                         GameBoard.iAmReady = false;
                         GameBoard.ThisGame.btnFire.setVisible(true);
                         GameBoard.ThisGame.btnFire.setEnabled(false);
-                        GameBoard.ThisGame.btnReady.setEnabled(true);
+                        GameBoard.ThisGame.btnReady.setEnabled(false);
                         GameBoard.ThisGame.btnRestart.setVisible(false);
-                        GameBoard.ThisGame.btnHorizantal.setEnabled(true);
-                        GameBoard.ThisGame.btnVertical.setEnabled(true);
+                        GameBoard.ThisGame.btnHorizantal.setEnabled(false);
+                        GameBoard.ThisGame.btnVertical.setEnabled(false);
                         break;
 
                     case Disconnect:
@@ -106,7 +106,7 @@ class Listen extends Thread {
                             }
                         });
 
-                        //Artık burada btnFire kontrolü YOK!
+                        //Artık burada btnFire kontrolü Yok!
                         break;
 
                     case Attack:
@@ -149,12 +149,6 @@ class Listen extends Thread {
                         }
                         break;
 
-//                    case SHIP_INFO:
-//                        break;
-//
-//                    case PairStatus:
-//                        break;
-
                     case Start:
                         SwingUtilities.invokeLater(() -> {
                             GameBoard.ThisGame.initializeNewGame();
@@ -196,9 +190,7 @@ class Listen extends Thread {
 
 public class Client {
 
-
     public static Socket socket;
-
 
     public static ObjectInputStream sInput;
 
@@ -208,7 +200,6 @@ public class Client {
 
     public static void Start(String ip, int port) {
         try {
-            // Client Soket nesnesi
             Client.socket = new Socket(ip, port);
             Client.Display("Servera bağlandı");
             // input stream
