@@ -10,15 +10,15 @@ game\PlayerBoard.class
 game\GameBoard$3.class
 game\GameBoard$8.class
 game\GameBoard$5.class
-game\Game$5.class
 battleshipclient\Listen$1.class
+game\GameBoard$11.class
 game\Game$1.class
 game\Ship.class
-game\Game$6.class
 game\GameBoard$2.class
 game\Game$3.class
 game\GameBoard$7.class
 game\Message.class
+game\GameBoard$10.class
 game\Game$4.class
 battleshipclient\Listen.class
 game\GameBoard$4.class

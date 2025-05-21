@@ -113,7 +113,8 @@ public class Game extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Lütfen bir isim giriniz.");
 
         } else {
-            Client.Start("localhost", 2000);
+            //Client.Start("localhost", 2000);
+            Client.Start("51.21.162.215", 2000);
             //başlangıç durumları
 
             btn_connect.setEnabled(false);
